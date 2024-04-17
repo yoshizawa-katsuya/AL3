@@ -106,7 +106,6 @@ void GameScene::Draw() {
 	/// </summary>
 	sprite_->Draw();
 
-
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア

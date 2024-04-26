@@ -8,13 +8,14 @@ void Player::Initialize(Model* model, uint32_t textureHandle, ViewProjection* vi
 	model_ = model;
 	textureHandle_ = textureHandle;
 	worldTransform_.Initialize();
+	worldTransform_.translation_.y += 2;
 	viewProjection_ = viewProjection;
 
 }
 
 void Player::Update() {
 
-	worldTransform_.TransferMatrix();
+	worldTransform_.UpdateMatrix();
 
 }
 

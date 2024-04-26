@@ -20,7 +20,7 @@ GameScene::~GameScene() {
 	delete modelSkydome_;
 
 	delete skydome_;
-}
+
 
 	delete player_;
 
@@ -72,8 +72,6 @@ void GameScene::Initialize() {
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("./Resources/mario.jpg");
 
-	//3Dモデルの生成
-	model_ = Model::Create();
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -83,7 +81,7 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_, &viewProjection_);
 
-}
+
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);

@@ -11,6 +11,7 @@
 #include "Matrix.h"
 #include "DebugCamera.h"
 #include "Skydome.h"
+#include "Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -60,8 +61,6 @@ private: // メンバ変数
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
-	ViewProjection viewProjection_;
-
 	//デバッグカメラ有効
 	bool isDebuCameraActive_ = false;
 
@@ -70,5 +69,17 @@ private: // メンバ変数
 
 	//スカイドーム
 	Skydome* skydome_ = nullptr;
+
+	
+	//テクスチャハンドル
+	uint32_t textureHandle_ = 0;
+
+	
+
+	//ビュープロジェクション
+	ViewProjection viewProjection_;
+
+	//自キャラ
+	Player* player_ = nullptr;
 
 };

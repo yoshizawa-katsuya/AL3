@@ -22,6 +22,10 @@ GameScene::~GameScene() {
 	delete skydome_;
 }
 
+	delete player_;
+
+}
+
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
@@ -65,6 +69,22 @@ void GameScene::Initialize() {
 		}
 	}
 
+	//ファイル名を指定してテクスチャを読み込む
+	textureHandle_ = TextureManager::Load("./Resources/mario.jpg");
+
+	//3Dモデルの生成
+	model_ = Model::Create();
+
+	//ビュープロジェクションの初期化
+	viewProjection_.Initialize();
+
+	//自キャラの生成
+	player_ = new Player();
+	//自キャラの初期化
+	player_->Initialize(model_, textureHandle_, &viewProjection_);
+
+}
+
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
@@ -74,6 +94,8 @@ void GameScene::Update() {
 
 	//スカイドームの更新
 	skydome_->Update();
+
+	player_->Update();
 
 	//ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -90,6 +112,8 @@ void GameScene::Update() {
 		if (input_->TriggerKey(DIK_SPACE)) {
 			isDebuCameraActive_ = true;
 		}
+
+	
 
 	#endif
 
@@ -134,6 +158,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	player_->Draw();
 
 	//スカイドームの描画
 	skydome_->Draw();

@@ -17,6 +17,9 @@ GameScene::~GameScene() {
 
 	delete debugCamera_;
 
+	delete modelSkydome_;
+
+	delete skydome_;
 }
 
 void GameScene::Initialize() {
@@ -25,12 +28,18 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//スカイドームの生成
+	skydome_ = new Skydome();
+
 	
 
 	//3Dモデルの生成
 	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	viewProjection_.Initialize();
+
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
 	//要素数
 	const uint32_t kNumBlockVirtical = 10;
@@ -62,6 +71,9 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+	//スカイドームの更新
+	skydome_->Update();
 
 	//ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -122,6 +134,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	//スカイドームの描画
+	skydome_->Draw();
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

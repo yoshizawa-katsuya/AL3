@@ -10,6 +10,7 @@
 #include <vector>
 #include "Matrix.h"
 #include "DebugCamera.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -55,6 +56,7 @@ private: // メンバ変数
 
 	//3Dモデルデータ
 	Model* model_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
@@ -65,5 +67,8 @@ private: // メンバ変数
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+
+	//スカイドーム
+	Skydome* skydome_ = nullptr;
 
 };

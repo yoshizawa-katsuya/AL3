@@ -35,11 +35,13 @@ void GameScene::Initialize() {
 	//スカイドームの生成
 	skydome_ = new Skydome();
 
-	
+	// 自キャラの生成
+	player_ = new Player();
 
 	//3Dモデルの生成
 	model_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 
 	viewProjection_.Initialize();
 
@@ -76,10 +78,9 @@ void GameScene::Initialize() {
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	//自キャラの生成
-	player_ = new Player();
+	
 	//自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &viewProjection_);
+	player_->Initialize(modelPlayer_, &viewProjection_);
 
 
 

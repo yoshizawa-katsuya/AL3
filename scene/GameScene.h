@@ -58,6 +58,7 @@ private: // メンバ変数
 	//3Dモデルデータ
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 

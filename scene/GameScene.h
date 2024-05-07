@@ -13,6 +13,7 @@
 #include "Skydome.h"
 #include "Player.h"
 #include "MapChipField.h"
+#include "CameraController.h"
 
 /// <summary>
 /// ゲームシーン
@@ -75,8 +76,11 @@ private: // メンバ変数
 	Skydome* skydome_ = nullptr;
 
 	//マップチップフィールド
-	MapChipField* mapChipField_;
+	MapChipField* mapChipField_ = nullptr;
 	
+	//カメラコントローラ
+	CameraController* cameraController_ = nullptr;
+
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 

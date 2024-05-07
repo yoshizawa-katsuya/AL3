@@ -128,7 +128,7 @@ void Player::Update() {
 		//着地
 		if (landing) {
 			//めり込み排斥
-			worldTransform_.translation_.y = 2.0f;
+			worldTransform_.translation_.y = 1.0f;
 			//摩擦で横方向速度が減衰する
 			velocity_.x *= (1.0f - kAttenuation);
 			//下方向速度をリセット
@@ -148,3 +148,5 @@ void Player::Draw() {
 	model_->Draw(worldTransform_, *viewProjection_);
 
 }
+
+WorldTransform& Player::GetWorldTransform() { return worldTransform_; }

@@ -26,6 +26,8 @@ GameScene::~GameScene() {
 
 	delete mapChipField_;
 
+	delete cameraController_;
+
 }
 
 void GameScene::Initialize() {
@@ -43,6 +45,12 @@ void GameScene::Initialize() {
 	//マップチップフィールドの生成
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+
+	//カメラコントローラの生成
+	cameraController_ = new CameraController;
+	cameraController_->Initialize();
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
 
 	//3Dモデルの生成
 	model_ = Model::Create();
@@ -82,8 +90,10 @@ void GameScene::Update() {
 	//スカイドームの更新
 	skydome_->Update();
 
+	//自キャラの更新
 	player_->Update();
 
+	
 	//ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -113,6 +123,10 @@ void GameScene::Update() {
 		//ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
+
+		// カメラコントローラの更新
+		cameraController_->Update();
+		viewProjection_.translation_ = cameraController_->GetViewProjection().translation_;
 		//ビュープロジェクションの更新と転送
 		viewProjection_.UpdateMatrix();
 	}

@@ -62,6 +62,6 @@ private:
 	static inline const float kInterpolationRate = 0.3f;
 
 	//速度掛け率
-	static inline const float kVelocityBies = 15.0f;
+	static inline const float kVelocityBies = 5.0f;
 
 };

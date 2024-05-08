@@ -36,27 +36,35 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	// 3Dモデルの生成
+	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+
+
 	//スカイドームの生成
 	skydome_ = new Skydome();
 
-	// 自キャラの生成
-	player_ = new Player();
-
-	//マップチップフィールドの生成
+	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
+
+	// 自キャラの生成
+	player_ = new Player();
+	// 自キャラの初期化
+	Vector3 PlayerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	player_->Initialize(modelPlayer_, &viewProjection_, PlayerPosition);
+	player_->SetMapChipField(mapChipField_);
+
+	
 	//カメラコントローラの生成
 	cameraController_ = new CameraController;
 	cameraController_->Initialize();
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
 
-	//3Dモデルの生成
-	model_ = Model::Create();
-	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
-
+	
 	viewProjection_.Initialize();
 
 	skydome_->Initialize(modelSkydome_, &viewProjection_);
@@ -73,11 +81,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	
-	//自キャラの初期化
-	Vector3 PlayerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-
-	player_->Initialize(modelPlayer_, &viewProjection_, PlayerPosition);
-
+	
 
 
 	//デバッグカメラの生成

@@ -17,10 +17,23 @@ struct MapChipData {
 /// <summary>
 ///マップチップフィールド
 /// <summary>
-class MapChipField {
+class MapChipField {	
 
 public:
 	
+	struct IndexSet {
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+
+	//範囲矩形
+	struct Rect {
+		float left;
+		float right;
+		float bottom;
+		float top;
+	};
+
 	void ResetMapChipDate();
 
 	void LoadMapChipCsv(const std::string& filePath);
@@ -28,6 +41,10 @@ public:
 	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
 
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
+
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
+
+	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
 
 	uint32_t GetNumBlockVirtical();
 

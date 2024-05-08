@@ -6,10 +6,32 @@
 #include <Input.h>
 #include <algorithm>
 
+class MapChipField;
+
 ///<summary>
 ///自キャラ
 /// </summary>
 class Player {
+private:
+
+	// マップとの当たり判定情報
+	struct CollisionMapInfo {
+		bool isCeilingCollision = false;
+		bool onGround = false;
+		bool isWallCollision = false;
+		Vector3 move;
+	};
+
+	enum Corner {
+		kRightBottom,	//右下
+		kLeftBottom,	//左下
+		kRightTop,		//右上
+		kLeftTop,		//左上
+
+		kNumCorner		//要素数
+
+	};
+
 public:
 	/// <summary>
 	/// 初期化
@@ -24,16 +46,36 @@ public:
 	///  </summary>
 	void Update();
 
+	//移動
+	void Move();
+
+	//マップ衝突判定
+	void MapCollision(CollisionMapInfo& info);
+	void MapCollisionUp(CollisionMapInfo& info);
+	void MapCollisionBottom(CollisionMapInfo& info);
+	void MapCollisionRight(CollisionMapInfo& info);
+	void MapCollisionLeft(CollisionMapInfo& info);
+
+	//判定結果を反映して移動させる
+	void MoveAppli(const CollisionMapInfo& info);
+
+	void CeilingCollision(const CollisionMapInfo& info);
+
+	Vector3 CornerPosition(const Vector3& center, Corner corner);
+
 	/// <summary>
 	/// 描画
 	///  </summary>
 	void Draw();
+
+	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 	WorldTransform& GetWorldTransform();
 
 	const Vector3& GetVelocity() const { return velocity_; }
 
 private:
+	
 	
 	enum  class LRDirection {
 		kRight,
@@ -61,10 +103,17 @@ private:
 	bool onGround_ = true;
 
 	//重力加速度
-	static inline const float kGravityAcceleration = 0.1f;
+	static inline const float kGravityAcceleration = 0.03f;
 
 	static inline const float kLimitFallSpeed = 1.0f;
-	static inline const float kJumpAcceleration = 1.0f;
+	static inline const float kJumpAcceleration = 0.5f;
+
+	//キャラクターの当たり判定サイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
+
+	//余白
+	static inline const float kBlank = 0.1f;
 
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -73,5 +122,8 @@ private:
 	
 
 	ViewProjection* viewProjection_ = nullptr;
+
+	//マップチップによるフィールド
+	MapChipField* mapChipField_ = nullptr;
 
 };

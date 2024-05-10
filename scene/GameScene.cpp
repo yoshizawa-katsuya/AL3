@@ -19,6 +19,8 @@ GameScene::~GameScene() {
 
 	delete modelSkydome_;
 
+	delete modelPlayer_;
+
 	delete skydome_;
 
 

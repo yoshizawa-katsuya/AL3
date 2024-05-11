@@ -17,7 +17,7 @@ private:
 	// マップとの当たり判定情報
 	struct CollisionMapInfo {
 		bool isCeilingCollision = false;
-		bool onGround = false;
+		bool landing = false;
 		bool isWallCollision = false;
 		Vector3 move;
 	};
@@ -59,7 +59,14 @@ public:
 	//判定結果を反映して移動させる
 	void MoveAppli(const CollisionMapInfo& info);
 
+	//天井に接触している場合の処理
 	void CeilingCollision(const CollisionMapInfo& info);
+
+	//地面に接触している場合の処理
+	void GroundCollision(const CollisionMapInfo& info);
+
+	//壁に接触している場合の処理
+	void WallCollision(const CollisionMapInfo& info);
 
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
@@ -108,12 +115,19 @@ private:
 	static inline const float kLimitFallSpeed = 1.0f;
 	static inline const float kJumpAcceleration = 0.5f;
 
+	//着地時の速度減衰率
+	static inline const float kAttenuationLanding = 0.1f;
+
+	//壁に接触時の速度減衰比率
+	static inline const float kAttenuationWall = 1.0f;
+
+
 	//キャラクターの当たり判定サイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
 
 	//余白
-	static inline const float kBlank = 0.1f;
+	static inline const float kBlank = 0.01f;
 
 	//ワールド変換データ
 	WorldTransform worldTransform_;

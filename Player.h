@@ -2,25 +2,38 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Input.h"
+#include "PlayerBullet.h"
 
 //自キャラ
 class Player {
 
 public:
 	
+	//デストラクタ
+	~Player();
+
 	//初期化
 	void Initialize(Model* model, uint32_t textureHandle);
 
 	//更新
 	void Update();
 
+	//旋回
+	void Rotate();
+
+	//攻撃
+	void Attack();
+
 	//描画
-	void Draw(ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection);
 
 private:
 	
 	//キーボード入力
 	Input* input_ = nullptr;
+
+	//弾
+	PlayerBullet* bullet_ = nullptr;
 
 	//ワールド変換データ
 	WorldTransform worldTransform_;

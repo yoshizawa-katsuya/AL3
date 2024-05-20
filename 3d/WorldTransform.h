@@ -43,6 +43,10 @@ public:
 	/// </summary>
 	void Map();
 	/// <summary>
+	/// 行列を計算・転送する
+	void UpdateMatrix();
+	/// </summary>
+	/// <summary>
 	/// 行列を転送する
 	/// </summary>
 	void TransferMatrix();

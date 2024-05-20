@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "Input.h"
 #include "PlayerBullet.h"
+#include <list>
 
 //自キャラ
 class Player {
@@ -33,7 +34,7 @@ private:
 	Input* input_ = nullptr;
 
 	//弾
-	PlayerBullet* bullet_ = nullptr;
+	std::list<PlayerBullet*> bullets_;
 
 	//ワールド変換データ
 	WorldTransform worldTransform_;

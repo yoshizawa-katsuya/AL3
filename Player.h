@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Input.h"
 
 //自キャラ
 class Player {
@@ -18,6 +19,9 @@ public:
 
 private:
 	
+	//キーボード入力
+	Input* input_ = nullptr;
+
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル

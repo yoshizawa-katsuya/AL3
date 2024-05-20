@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
+#include "DebugCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -49,6 +50,12 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
+
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 

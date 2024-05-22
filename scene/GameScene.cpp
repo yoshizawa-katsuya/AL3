@@ -21,6 +21,8 @@ GameScene::~GameScene() {
 
 	delete modelPlayer_;
 
+	delete modelEnemy_;
+
 	delete skydome_;
 
 

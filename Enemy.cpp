@@ -15,15 +15,33 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Enemy::Update() {
-
-	// キャラクターの移動速さ
-	const float kCharacterSpeed = 0.2f;
-
-	// 座標移動(ベクトルの加算)
-	worldTransform_.translation_ = Add(worldTransform_.translation_, {0.0f, 0.0f, -kCharacterSpeed});
+	switch (phase_) {
+	case Phase::Approach:
+	default:
+		ApproachUpdate();
+		break;
+	case Phase::Leave:
+		LeaveUpdate();
+		break;
+	}
 
 	worldTransform_.UpdateMatrix();
 
+}
+
+void Enemy::ApproachUpdate() {
+	// 移動
+	worldTransform_.translation_ = Add(worldTransform_.translation_, ApproachVelocity_);
+	// 規定の位置に到達したら離脱
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::LeaveUpdate() {
+	// 移動
+	worldTransform_.translation_ = Add(worldTransform_.translation_, LeaveVelocity_);
+	
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) {

@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "EnemyBullet.h"
+class Player;
 
 //敵
 class Enemy {
@@ -27,6 +28,11 @@ public:
 	// 描画
 	void Draw(const ViewProjection& viewProjection);
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
 private:
 
 	// ワールド変換データ
@@ -35,6 +41,9 @@ private:
 	Model* model_ = nullptr;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+
+	//自キャラ
+	Player* player_ = nullptr;
 
 	// 弾
 	std::list<EnemyBullet*> bullets_;

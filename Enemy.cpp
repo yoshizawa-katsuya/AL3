@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "cassert"
 #include "Vector.h"
+#include "Player.h"
 
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
@@ -85,10 +86,18 @@ void Enemy::LeaveUpdate() {
 
 void Enemy::Fire() {
 
-	
+	//弾の速さ
+	const float kBulletSpeed = 0.5f;
+
+	Vector3 toPosition = player_->GetWorldPosition();
+	Vector3 fromPosition = GetWorldPosition();
+	Vector3 velocity = Subtract(toPosition, fromPosition);
+	velocity = Normalize(velocity);
+	velocity = Multiply(kBulletSpeed, velocity);
+
 	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
-	newBullet->Initialize(model_, worldTransform_.translation_);
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 	bullets_.push_back(newBullet);
 
@@ -103,5 +112,18 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 	for (EnemyBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
+
+}
+
+Vector3 Enemy::GetWorldPosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worlsPos;
+	// ワールド行列の平行移動成分を取得
+	worlsPos.x = worldTransform_.matWorld_.m[3][0];
+	worlsPos.y = worldTransform_.matWorld_.m[3][1];
+	worlsPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worlsPos;
 
 }

@@ -142,3 +142,16 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	}
 
 }
+
+Vector3 Player::GetWorldPosition() {
+
+	//ワールド座標を入れる変数
+	Vector3 worlsPos;
+	//ワールド行列の平行移動成分を取得
+	worlsPos.x = worldTransform_.matWorld_.m[3][0];
+	worlsPos.y = worldTransform_.matWorld_.m[3][1];
+	worlsPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worlsPos;
+
+}

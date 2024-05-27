@@ -52,7 +52,7 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	//敵の初期化
 	enemy_->Initialize(model_, enemyTextureHandle_);
-
+	enemy_->SetPlayer(player_);
 }
 
 void GameScene::Update() {

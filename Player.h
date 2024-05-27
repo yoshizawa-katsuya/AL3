@@ -28,6 +28,9 @@ public:
 	//描画
 	void Draw(const ViewProjection& viewProjection);
 
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
 private:
 	
 	//キーボード入力

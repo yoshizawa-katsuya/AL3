@@ -3,7 +3,7 @@
 #include "TextureManager.h"
 #include "Vector.h"
 
-void EnemyBullet::Initialize(Model* model, const Vector3& position) {
+void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3 velocity) {
 
 	// NULLポインタチェック
 	assert(model);
@@ -16,7 +16,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position) {
 	// 引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
 
-	velocity_ = {0.0f, 0.0f, -1.0f};
+	velocity_ = velocity;
 
 }
 

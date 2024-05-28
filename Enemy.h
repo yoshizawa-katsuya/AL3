@@ -25,6 +25,9 @@ public:
 	//弾発射
 	void Fire();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
 	// 描画
 	void Draw(const ViewProjection& viewProjection);
 
@@ -32,6 +35,11 @@ public:
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	// 弾リストを取得
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
+	const float GetRadius() const { return radius_; }
 
 private:
 
@@ -62,5 +70,8 @@ private:
 	// キャラクターの移動速さ
 	Vector3 ApproachVelocity_ = {0.0f, 0.0f, -0.1f};
 	Vector3 LeaveVelocity_ = {0.1f, -0.1f, 0.0f};
+
+	// 半径
+	const float radius_ = 1.0f;
 
 };

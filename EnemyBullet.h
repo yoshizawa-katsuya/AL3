@@ -9,9 +9,17 @@ public:
 
 	void Update();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
 	void Draw(const ViewProjection& viewProjection);
 
 	bool IsDead() const { return isDead_; }
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	const float GetRadius() const { return radius_; }
 
 private:
 
@@ -32,5 +40,8 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	// デスフラグ
 	bool isDead_ = false;
+
+	//半径
+	const float radius_ = 1.0f; 
 
 };

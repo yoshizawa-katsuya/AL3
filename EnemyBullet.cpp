@@ -34,10 +34,24 @@ void EnemyBullet::Update() {
 
 }
 
+void EnemyBullet::OnCollision() { isDead_ = true; }
+
 void EnemyBullet::Draw(const ViewProjection& viewProjection) {
 
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 
+}
+
+Vector3 EnemyBullet::GetWorldPosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worlsPos;
+	// ワールド行列の平行移動成分を取得
+	worlsPos.x = worldTransform_.matWorld_.m[3][0];
+	worlsPos.y = worldTransform_.matWorld_.m[3][1];
+	worlsPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worlsPos;
 }

@@ -103,6 +103,10 @@ void Enemy::Fire() {
 
 }
 
+void Enemy::OnCollision() {
+
+}
+
 void Enemy::Draw(const ViewProjection& viewProjection) {
 
 	// 3Dモデルを描画

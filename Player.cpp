@@ -131,6 +131,10 @@ void Player::Attack() {
 
 }
 
+void Player::OnCollision() {
+
+}
+
 void Player::Draw(const ViewProjection& viewProjection) {
 
 	//3Dモデルを描画

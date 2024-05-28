@@ -25,11 +25,19 @@ public:
 	//攻撃
 	void Attack();
 
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
 	//描画
 	void Draw(const ViewProjection& viewProjection);
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	//弾リストを取得
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	const float GetRadius() const { return radius_; }
 
 private:
 	
@@ -45,5 +53,8 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+
+	// 半径
+	const float radius_ = 1.0f; 
 
 };

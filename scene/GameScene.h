@@ -10,6 +10,8 @@
 #include "Player.h"
 #include "DebugCamera.h"
 #include "Enemy.h"
+#include "Skydome.h"
+#include <memory>
 
 /// <summary>
 /// ゲームシーン
@@ -71,11 +73,15 @@ private: // メンバ変数
 
 	//3Dモデル
 	Model* model_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 
 	//自キャラ
 	Player* player_ = nullptr;
 
 	//敵
 	Enemy* enemy_ = nullptr;
+
+	//天球
+	std::unique_ptr<Skydome> skydome_;
 
 };

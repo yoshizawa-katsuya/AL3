@@ -11,6 +11,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 
 	delete model_;
+	delete modelSkydome_;
 
 	//自キャラの解放
 	delete player_;
@@ -43,6 +44,7 @@ void GameScene::Initialize() {
 
 	//3Dモデルの生成
 	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome02", true);
 
 	//自キャラの生成
 	player_ = new Player();
@@ -54,6 +56,11 @@ void GameScene::Initialize() {
 	//敵の初期化
 	enemy_->Initialize(model_, enemyTextureHandle_);
 	enemy_->SetPlayer(player_);
+
+	//スカイドームの生成
+	skydome_ = std::make_unique<Skydome>();
+	//スカイドームの初期化
+	skydome_->Initialize(modelSkydome_);
 }
 
 void GameScene::Update() {
@@ -81,7 +88,8 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
-	
+	//スカイドームの更新
+	skydome_->Update();
 
 	//自キャラの更新
 	player_->Update();
@@ -207,6 +215,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	//スカイドームの描画
+	skydome_->Draw(viewProjection_);
 
 	//自キャラの描画
 	player_->Draw(viewProjection_);

@@ -2,14 +2,17 @@
 #include "cassert"
 #include "Vector.h"
 #include "Player.h"
+#include "GameScene.h"
 
 Enemy::~Enemy() {
-	for (EnemyBullet* bullet : bullets_) {
+	/*
+	for (EnemyBullet* bullet : enemyBullets_) {
 		delete bullet;
 	}
+	*/
 }
 
-void Enemy::Initialize(Model* model, uint32_t textureHandle) {
+void Enemy::Initialize(Model* model, uint32_t textureHandle, const Vector3& position) {
 
 	// NULLポインタチェック
 	assert(model);
@@ -18,7 +21,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {10.0f, 0.0f, 30.0f};
+	worldTransform_.translation_ = position;
 
 	ApproachInitialize();
 }
@@ -31,14 +34,15 @@ void Enemy::ApproachInitialize() {
 void Enemy::Update() {
 
 	// デスフラグの立った弾を削除
-	bullets_.remove_if([](EnemyBullet* bullet) {
+	/*
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {
 			delete bullet;
 			return true;
 		}
 		return false;
 	});
-
+	*/
 	switch (phase_) {
 	case Phase::Approach:
 	default:
@@ -50,10 +54,11 @@ void Enemy::Update() {
 	}
 
 	// 弾更新
-	for (EnemyBullet* bullet : bullets_) {
+	/*
+	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Update();
 	}
-
+	*/
 	worldTransform_.UpdateMatrix();
 
 }
@@ -99,11 +104,14 @@ void Enemy::Fire() {
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
-	bullets_.push_back(newBullet);
+	gameScene_->AddEnemybullet(newBullet);
+	//enemyBullets_.push_back(newBullet);
 
 }
 
 void Enemy::OnCollision() {
+
+	isDead_ = true;
 
 }
 
@@ -113,10 +121,11 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	//弾描画
-	for (EnemyBullet* bullet : bullets_) {
+	/*
+	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Draw(viewProjection);
 	}
-
+	*/
 }
 
 Vector3 Enemy::GetWorldPosition() {

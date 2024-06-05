@@ -15,7 +15,7 @@ void RailCamera::Initialize(const Vector3 worldPos, const Vector3 rotate) {
 
 void RailCamera::Update() {
 
-	worldTransform_.translation_.z -= 0.1f;
+	worldTransform_.translation_.z += 0.1f;
 	//worldTransform_.rotation_.y += 0.1f;
 	worldTransform_.UpdateMatrix();
 

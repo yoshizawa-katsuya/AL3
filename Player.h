@@ -14,7 +14,7 @@ public:
 	~Player();
 
 	//初期化
-	void Initialize(Model* model, uint32_t textureHandle, const Vector3 position);
+	void Initialize(Model* model, uint32_t textureHandle, const Vector3& position);
 
 	//更新
 	void Update();

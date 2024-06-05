@@ -12,7 +12,7 @@ Player::~Player() {
 
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3 position) {
+void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position) {
 
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();

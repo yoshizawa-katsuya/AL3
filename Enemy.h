@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "EnemyBullet.h"
 class Player;
+class GameScene;
 
 //敵
 class Enemy {
@@ -12,7 +13,7 @@ public:
 	~Enemy();
 
 	// 初期化
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, const Vector3& position);
 
 	void ApproachInitialize();
 
@@ -37,9 +38,13 @@ public:
 	Vector3 GetWorldPosition();
 
 	// 弾リストを取得
-	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+	//const std::list<EnemyBullet*>& GetBullets() const { return enemyBullets_; }
 
 	const float GetRadius() const { return radius_; }
+
+	bool IsDead() const { return isDead_; }
+
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
 private:
 
@@ -52,9 +57,11 @@ private:
 
 	//自キャラ
 	Player* player_ = nullptr;
+	//ゲームシーン
+	GameScene* gameScene_ = nullptr;
 
 	// 弾
-	std::list<EnemyBullet*> bullets_;
+	//std::list<EnemyBullet*> enemyBullets_;
 	//発射間隔
 	static const int kFireInterval = 60;
 	//発射タイマー
@@ -73,5 +80,8 @@ private:
 
 	// 半径
 	const float radius_ = 1.0f;
+
+	//デスフラグ
+	bool isDead_ = false;
 
 };

@@ -15,3 +15,15 @@ void WorldTransform::UpdateMatrix() {
 	TransferMatrix();
 
 }
+
+Vector3 WorldTransform::GetWorldPosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worlsPos;
+	// ワールド行列の平行移動成分を取得
+	worlsPos.x = matWorld_.m[3][0];
+	worlsPos.y = matWorld_.m[3][1];
+	worlsPos.z = matWorld_.m[3][2];
+
+	return worlsPos;
+}

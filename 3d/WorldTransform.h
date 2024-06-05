@@ -44,8 +44,8 @@ public:
 	void Map();
 	/// <summary>
 	/// 行列を計算・転送する
-	void UpdateMatrix();
 	/// </summary>
+	void UpdateMatrix();
 	/// <summary>
 	/// 行列を転送する
 	/// </summary>
@@ -55,6 +55,10 @@ public:
 	/// </summary>
 	/// <returns>定数バッファ</returns>
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetConstBuffer() const { return constBuffer_; }
+	/// <summary>
+	/// ワールド座標の取得
+	/// </summary>
+	Vector3 GetWorldPosition();
 
 private:
 	// 定数バッファ

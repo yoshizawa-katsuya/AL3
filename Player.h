@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.h"
+#include "Sprite.h"
 #include "WorldTransform.h"
 #include "Input.h"
 #include "PlayerBullet.h"
@@ -17,7 +18,7 @@ public:
 	void Initialize(Model* model, uint32_t textureHandle, const Vector3& position);
 
 	//更新
-	void Update();
+	void Update(const ViewProjection& viewProjection);
 
 	//旋回
 	void Rotate();
@@ -30,6 +31,9 @@ public:
 
 	//描画
 	void Draw(const ViewProjection& viewProjection);
+
+	//UI描画
+	void DrawUI();
 
 	//親となるワールドトランスフォームをセット
 	void SetParent(const WorldTransform* parent);
@@ -56,6 +60,12 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+
+	//3Dレティクル用ワールドトランスフォーム
+	WorldTransform worldTransform3DReticle_;
+
+	//2Dレティクル用スプライト
+	Sprite* sprite2DReticle_ = nullptr;
 
 	// 半径
 	const float radius_ = 1.0f; 

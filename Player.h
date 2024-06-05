@@ -14,7 +14,7 @@ public:
 	~Player();
 
 	//初期化
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, const Vector3 position);
 
 	//更新
 	void Update();
@@ -30,6 +30,9 @@ public:
 
 	//描画
 	void Draw(const ViewProjection& viewProjection);
+
+	//親となるワールドトランスフォームをセット
+	void SetParent(const WorldTransform* parent);
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();

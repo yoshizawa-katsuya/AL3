@@ -12,7 +12,7 @@ Player::~Player() {
 
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
+void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3 position) {
 
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
@@ -24,6 +24,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
+	worldTransform_.translation_ = position;
 
 }
 
@@ -120,7 +121,7 @@ void Player::Attack() {
 
 		//弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
 		bullets_.push_back(newBullet);
 
@@ -144,6 +145,13 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
+
+}
+
+void Player::SetParent(const WorldTransform* parent) {
+
+	//親子関係を結ぶ
+	worldTransform_.parent_ = parent;
 
 }
 

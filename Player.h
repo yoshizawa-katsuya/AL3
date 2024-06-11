@@ -26,6 +26,9 @@ public:
 	//攻撃
 	void Attack();
 
+	//照準
+	void Reticle(const ViewProjection& viewProjection);
+
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 

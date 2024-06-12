@@ -12,24 +12,70 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//デバッグカメラの生成
+	debugCamera_ = std::make_unique<DebugCamera>(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
 	//ファイル名を指定してテクスチャを読み込む
 	textureHnadle_ = TextureManager::Load("./Resources/mario.jpg");
 
 	//3Dモデルの生成
-	model_.reset(Model::Create());
+	//model_.reset(Model::Create());
+	modelSkydome_.reset(Model::CreateFromOBJ("Skydome03", true));
+	modelGround_.reset(Model::CreateFromOBJ("Ground01", true));
+	modelPlayer_.reset(Model::CreateFromOBJ("Player02", true));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
+	//スカイドームの生成
+	skydome_ = std::make_unique<Skydome>();
+	skydome_->Initialize(modelSkydome_.get(), &viewProjection_);
+
+	//地面の生成
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(modelGround_.get(), &viewProjection_);
+
 	//自キャラの生成
 	player_ = std::make_unique<Player>();
 	//自キャラの初期化
-	player_->Initialize(model_.get(), textureHnadle_, &viewProjection_);
+	player_->Initialize(modelPlayer_.get(), &viewProjection_);
 
 }
 
 void GameScene::Update() {
 
+#ifdef  _DEBUG
+
+	if (input_->TriggerKey(DIK_P)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+
+#endif //  _DEBUG
+
+	//カメラの処理
+	if (isDebugCameraActive_) {
+
+		// デバッグカメラの更新
+		debugCamera_->Update();
+		
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		//ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	} else {
+	
+		//ビュープロジェクション行列の更新と転送
+		viewProjection_.UpdateMatrix();
+
+	}
+
+	// スカイドームの更新
+	skydome_->Update();
+
+	//地面の更新
+	ground_->Update();
+
+	//自キャラの更新
 	player_->Update();
 
 }
@@ -60,6 +106,14 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	// スカイドームの描画
+	skydome_->Draw();
+
+	//地面の描画
+	ground_->Draw();
+
+	//自キャラの描画
 	player_->Draw();
 
 	// 3Dオブジェクト描画後処理

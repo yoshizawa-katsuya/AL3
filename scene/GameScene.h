@@ -7,7 +7,10 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "DebugCamera.h"
 #include "Player.h"
+#include "Skydome.h"
+#include "Ground.h"
 #include <memory>
 
 /// <summary>
@@ -50,16 +53,32 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	
+	//デバッグカメラ有効 Pキーで切り替え
+	bool isDebugCameraActive_ = false;
+
+	//デバッグカメラ
+	std::unique_ptr<DebugCamera> debugCamera_;
+
 	//テクスチャハンドル
 	uint32_t textureHnadle_ = 0;
 
 	//モデル
-	std::unique_ptr<Model> model_ = nullptr;
+	//std::unique_ptr<Model> model_;
+	std::unique_ptr<Model> modelSkydome_;
+	std::unique_ptr<Model> modelGround_;
+	std::unique_ptr<Model> modelPlayer_;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	//自キャラ
-	std::unique_ptr<Player> player_ = nullptr;
+	// スカイドーム
+	std::unique_ptr<Skydome> skydome_;
 
+	//地面
+	std::unique_ptr<Ground> ground_;
+
+	//自キャラ
+	std::unique_ptr<Player> player_;
+
+	
 };

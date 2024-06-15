@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Skydome.h"
 #include "Ground.h"
+#include "FollowCamera.h"
 #include <memory>
 
 /// <summary>
@@ -58,6 +59,9 @@ private: // メンバ変数
 
 	//デバッグカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;
+
+	//追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
 
 	//テクスチャハンドル
 	uint32_t textureHnadle_ = 0;

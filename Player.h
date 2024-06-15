@@ -25,6 +25,10 @@ public:
 	///  </summary>
 	void Draw();
 
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+
+	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -32,4 +36,7 @@ private:
 	Model* model_ = nullptr;
 
 	ViewProjection* viewProjection_ = nullptr;
+
+	//カメラのビュープロジェクション
+	const ViewProjection* cameraViewProjection_ = nullptr;
 };

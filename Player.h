@@ -39,4 +39,9 @@ private:
 
 	//カメラのビュープロジェクション
 	const ViewProjection* cameraViewProjection_ = nullptr;
+
+	//目標角度
+	float targetAngle_;
+	//角度補完レート
+	const float angleCompletionRate_ = 0.2f;
 };

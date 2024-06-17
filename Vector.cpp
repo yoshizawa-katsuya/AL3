@@ -1,4 +1,6 @@
+#define _USE_MATH_DEFINES
 #include <math.h>
+#include <cmath>
 #include "Vector.h"
 
 Vector3 Add(const Vector3& v1, const Vector3& v2) {
@@ -118,4 +120,23 @@ Vector3 Perpendicular(const Vector3& vector) {
 		return { -vector.y, vector.x, 0.0f };
 	}
 	return { 0.0f, -vector.z, vector.y };
+}
+
+float LeapShortAngle(float a, float b, float t) {
+
+	//角度差分を求める
+	float diff = b - a;
+	float mpi = static_cast<float>(M_PI);
+
+	diff = std::fmod(diff, 2.0f * mpi);
+
+	if (diff > mpi) {
+		diff -= 2.0f * mpi;
+	}
+	else if (diff < -mpi) {
+		diff += 2.0f * mpi;
+	}
+
+	return a + diff * t;
+
 }

@@ -34,3 +34,6 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 
 //垂直なベクトルを求める
 Vector3 Perpendicular(const Vector3& vector);
+
+//最短角度補完
+float LeapShortAngle(float a, float b, float t);

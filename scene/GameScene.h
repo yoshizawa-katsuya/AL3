@@ -70,7 +70,12 @@ private: // メンバ変数
 	//std::unique_ptr<Model> model_;
 	std::unique_ptr<Model> modelSkydome_;
 	std::unique_ptr<Model> modelGround_;
-	std::unique_ptr<Model> modelPlayer_;
+
+	std::unique_ptr<Model> modelFighterBody_;
+	std::unique_ptr<Model> modelFighterHead_;
+	std::unique_ptr<Model> modelFighterL_arm_;
+	std::unique_ptr<Model> modelFighterR_arm_;
+
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;

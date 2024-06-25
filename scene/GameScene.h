@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Skydome.h"
 #include "Ground.h"
 #include "FollowCamera.h"
@@ -76,6 +77,9 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelFighterL_arm_;
 	std::unique_ptr<Model> modelFighterR_arm_;
 
+	std::unique_ptr<Model> modelEnemyBody_;
+	std::unique_ptr<Model> modelEnemyL_arm_;
+	std::unique_ptr<Model> modelEnemyR_arm_;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
@@ -89,5 +93,7 @@ private: // メンバ変数
 	//自キャラ
 	std::unique_ptr<Player> player_;
 
+	//敵
+	std::unique_ptr<Enemy> enemy_;
 	
 };

@@ -7,22 +7,13 @@
 #include "ImGuiManager.h"
 #include <cmath>
 
-void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm, ViewProjection* viewProjection) {
-	// NULLポインタチェック
-	assert(modelBody);
-	assert(modelHead);
-	assert(modelL_arm);
-	assert(modelR_arm);
-
-	modelBody_ = modelBody;
-	modelHead_ = modelHead;
-	modelL_arm_ = modelL_arm;
-	modelR_arm_ = modelR_arm;
-
-	worldTransformBase_.Initialize();
+void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
+	
+	
+	BaseCharacter::Initialize(models, viewProjection);
 
 	worldTransformBody_.Initialize();
-	worldTransformBody_.parent_ = &worldTransformBase_;
+	worldTransformBody_.parent_ = &worldTransform_;
 
 	worldTransformHead_.Initialize();
 	worldTransformHead_.translation_ = Vector3(0.0f, 3.5f, 0.0f);
@@ -37,7 +28,7 @@ void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, M
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
 	viewProjection_ = viewProjection;
-	targetAngle_ = worldTransformBase_.rotation_.y;
+	targetAngle_ = worldTransform_.rotation_.y;
 
 	InitializeFloatingGimmick();
 
@@ -90,7 +81,7 @@ void Player::Update() {
 			move = TransformNormal(move, rotationMatrix);
 
 			// 移動
-			worldTransformBase_.translation_ = Add(worldTransformBase_.translation_, move);
+			worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 
 			// 目標角度の算出
 			targetAngle_ = std::atan2(move.x, move.z);
@@ -98,10 +89,10 @@ void Player::Update() {
 	}
 
 	//最短角度補完
-	worldTransformBase_.rotation_.y = LeapShortAngle(worldTransformBase_.rotation_.y, targetAngle_, angleCompletionRate_);
+	worldTransform_.rotation_.y = LeapShortAngle(worldTransform_.rotation_.y, targetAngle_, angleCompletionRate_);
 
 	//行列を更新
-	worldTransformBase_.UpdateMatrix();
+	BaseCharacter::Update();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
@@ -159,8 +150,8 @@ void Player::UpdateRollArmGimmick() {
 }
 
 void Player::Draw() { 
-	modelBody_->Draw(worldTransformBody_, *viewProjection_);
-	modelHead_->Draw(worldTransformHead_, *viewProjection_);
-	modelL_arm_->Draw(worldTransformL_arm_, *viewProjection_);
-	modelR_arm_->Draw(worldTransformR_arm_, *viewProjection_);
+	models_[kModelIndexBody]->Draw(worldTransformBody_, *viewProjection_);
+	models_[kModelIndexHead]->Draw(worldTransformHead_, *viewProjection_);
+	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, *viewProjection_);
+	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, *viewProjection_);
 }

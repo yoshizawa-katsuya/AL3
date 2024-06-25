@@ -1,19 +1,18 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "BaseCharacter.h"
 
 ///< summary>
 /// 自キャラ
 ///  </summary>
-class Player {
+class Player : public BaseCharacter{
 public:
 	/// <summary>
 	/// 初期化
-	///  </summary>
-	/// <param name="model">モデル</param>
-	/// <param name="textureHandle">テクスチャハンドル</param>
-	/// <param name="viewProjection">ビュープロジェクション</param>
-	void Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm, ViewProjection* viewProjection);
+	/// </summary>
+	/// <param name="models_">モデルデータ配列</param>
+	void Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) override;
 
 	//浮遊ギミック初期化
 	void InitializeFloatingGimmick();
@@ -24,7 +23,7 @@ public:
 	/// <summary>
 	/// 更新
 	///  </summary>
-	void Update();
+	void Update() override;
 
 	//浮遊ギミック更新
 	void UpdateFloatingGimmick();
@@ -35,27 +34,23 @@ public:
 	/// <summary>
 	/// 描画
 	///  </summary>
-	void Draw();
+	void Draw() override;
 
-	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
 
 private:
 	// ワールド変換データ
-	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
 
-	// モデル
-	Model* modelBody_ = nullptr;
-	Model* modelHead_ = nullptr;
-	Model* modelL_arm_ = nullptr;
-	Model* modelR_arm_ = nullptr;
-
-	ViewProjection* viewProjection_ = nullptr;
+	const uint16_t kModelIndexBody = 0;
+	const uint16_t kModelIndexHead = 1;
+	const uint16_t kModelIndexL_arm = 2;
+	const uint16_t kModelIndexR_arm = 3;
 
 	//カメラのビュープロジェクション
 	const ViewProjection* cameraViewProjection_ = nullptr;

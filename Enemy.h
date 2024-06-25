@@ -1,0 +1,34 @@
+#pragma once
+#include "BaseCharacter.h"
+
+class Enemy : public BaseCharacter{
+public:
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="models_">モデルデータ配列</param>
+	void Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) override;
+
+	/// <summary>
+	/// 更新
+	///  </summary>
+	void Update() override;
+
+	/// <summary>
+	/// 描画
+	///  </summary>
+	void Draw() override;
+
+private:
+
+	// ワールド変換データ
+	WorldTransform worldTransformBody_;
+	WorldTransform worldTransformL_arm_;
+	WorldTransform worldTransformR_arm_;
+	
+	const uint16_t kModelIndexBody = 0;
+	const uint16_t kModelIndexL_arm = 1;
+	const uint16_t kModelIndexR_arm = 2;
+
+};

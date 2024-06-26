@@ -27,12 +27,32 @@ void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewP
 	worldTransformR_arm_.translation_ = Vector3(1.3f, 2.8f, 0.0f);
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
+	worldTransformHammer_.Initialize();
+	worldTransformHammer_.translation_ = Vector3(0.0, 3.0f, 0.0f);
+	worldTransformHammer_.parent_ = &worldTransformBody_;
+
 	viewProjection_ = viewProjection;
 	targetAngle_ = worldTransform_.rotation_.y;
 
 	InitializeFloatingGimmick();
 
 	InitializeRollArmGimmick();
+
+}
+
+void Player::BehaviorRootInitialize() {
+
+	InitializeFloatingGimmick();
+
+	InitializeRollArmGimmick();
+
+}
+
+void Player::BehaviorAttackInitialize() {
+
+	worldTransformL_arm_.rotation_.x = -1.6f;
+	worldTransformR_arm_.rotation_.x = -1.6f;
+	worldTransformHammer_.rotation_.x = 1.6f;	
 
 }
 
@@ -50,11 +70,50 @@ void Player::InitializeRollArmGimmick() {
 
 void Player::Update() {
 
+	if (behaviorRequest_) {
+		//振るまいを変更する
+		behavior_ = behaviorRequest_.value();
+		//各振るまいごとの初期化を実行
+		switch (behavior_) {
+		case Behavior::kRoot:
+		default:
+			BehaviorRootInitialize();
+			break;
+		case Behavior::kAttack:
+			BehaviorAttackInitialize();
+			break;
+		}
+		//振るまいリクエストをリセット
+		behaviorRequest_ = std::nullopt;
+	}
+
+	switch (behavior_) {
+		//通常行動
+	case Behavior::kRoot:
+	default:
+		BehaviorRootUpdate();
+		break;
+	case Behavior::kAttack:
+		BehaviorAttackUpdate();
+		break;
+	}
+
+	//行列を更新
+	BaseCharacter::Update();
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
+	worldTransformHammer_.UpdateMatrix();
+}
+
+void Player::BehaviorRootUpdate() {
+
 	UpdateFloatingGimmick();
 
 	UpdateRollArmGimmick();
 
-	//ゲームパッドの状態を得る変数
+	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
 
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
@@ -86,17 +145,49 @@ void Player::Update() {
 			// 目標角度の算出
 			targetAngle_ = std::atan2(move.x, move.z);
 		}
+
+		//攻撃入力
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+			behaviorRequest_.emplace(Behavior::kAttack);
+		}
 	}
 
-	//最短角度補完
+	// 最短角度補完
 	worldTransform_.rotation_.y = LeapShortAngle(worldTransform_.rotation_.y, targetAngle_, angleCompletionRate_);
 
-	//行列を更新
-	BaseCharacter::Update();
-	worldTransformBody_.UpdateMatrix();
-	worldTransformHead_.UpdateMatrix();
-	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();
+
+}
+
+void Player::BehaviorAttackUpdate() {
+
+	
+
+	if (currentAttackFrame_ < kExtraOperationEndTime_) {
+		
+		float extoraOperationSpeed = 0.12f;
+
+		worldTransformL_arm_.rotation_.x -= extoraOperationSpeed;
+		worldTransformR_arm_.rotation_.x -= extoraOperationSpeed;
+		worldTransformHammer_.rotation_.x -= extoraOperationSpeed;
+	
+	}
+	else if (currentAttackFrame_ >= kSwingStartTime_ && currentAttackFrame_ < kSwingEndTime_) {
+
+		float swingSpeed = 0.3f;
+
+		worldTransformL_arm_.rotation_.x += swingSpeed;
+		worldTransformR_arm_.rotation_.x += swingSpeed;
+		worldTransformHammer_.rotation_.x += swingSpeed;
+	}
+
+	currentAttackFrame_++;
+
+	if (currentAttackFrame_ >= kAttackTime_) {
+	
+		currentAttackFrame_ = 0;
+		behaviorRequest_.emplace(Behavior::kRoot);
+	}
+
 }
 
 void Player::UpdateFloatingGimmick() {
@@ -149,9 +240,14 @@ void Player::UpdateRollArmGimmick() {
 
 }
 
-void Player::Draw() { 
+void Player::Draw() {
 	models_[kModelIndexBody]->Draw(worldTransformBody_, *viewProjection_);
 	models_[kModelIndexHead]->Draw(worldTransformHead_, *viewProjection_);
 	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, *viewProjection_);
 	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, *viewProjection_);
+
+	if (behavior_ == Behavior::kAttack) {
+	
+	models_[kModelIndexHammer]->Draw(worldTransformHammer_, *viewProjection_);
+	}
 }

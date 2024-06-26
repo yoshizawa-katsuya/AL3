@@ -102,7 +102,7 @@ void Player::Update() {
 void Player::UpdateFloatingGimmick() {
 
 	//浮遊移動のサイクル<frame>
-	const uint16_t cycle = 120;
+	const uint16_t cycle = 90;
 
 	
 	//1フレームでのパラメーター加算値
@@ -128,22 +128,22 @@ void Player::UpdateFloatingGimmick() {
 void Player::UpdateRollArmGimmick() {
 
 	// 腕振りのサイクル<frame>
-	const uint16_t cycle = 120;
+	const uint16_t cycle = 90;
 
 	// 1フレームでのパラメーター加算値
 	const float step = 2.0f * static_cast<float>(M_PI) / cycle;
 
 	// パラメーターを1ステップ分加算
-	floatingParameter_ += step;
+	rollArmParameter_ += step;
 	// 2πを超えたら0に戻す
-	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * static_cast<float>(M_PI));
+	rollArmParameter_ = std::fmod(rollArmParameter_, 2.0f * static_cast<float>(M_PI));
 
 	// 腕振りの振幅<m>
 	const float amplitude = 0.5f;
 
 	// 腕振りを座標に反映
-	worldTransformL_arm_.rotation_.x = std::sin(floatingParameter_) * amplitude;
-	worldTransformR_arm_.rotation_.x = std::sin(floatingParameter_) * amplitude;
+	worldTransformL_arm_.rotation_.x = std::sin(rollArmParameter_) * amplitude;
+	worldTransformR_arm_.rotation_.x = std::sin(rollArmParameter_) * amplitude;
 
 	
 

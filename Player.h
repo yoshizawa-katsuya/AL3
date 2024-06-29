@@ -21,6 +21,9 @@ public:
 	//攻撃行動初期化
 	void BehaviorAttackInitialize();
 
+	//ダッシュ行動初期化
+	void BehaviorDashInitialize();
+
 	//浮遊ギミック初期化
 	void InitializeFloatingGimmick();
 
@@ -37,6 +40,9 @@ public:
 
 	//攻撃行動更新
 	void BehaviorAttackUpdate();
+
+	//ダッシュ行動初期化
+	void BehaviorDashUpdate();
 
 	//浮遊ギミック更新
 	void UpdateFloatingGimmick();
@@ -59,6 +65,7 @@ private:
 	enum class Behavior {
 		kRoot,	//通常状態
 		kAttack,	//攻撃中
+		kDash,	//ダッシュ中
 	};
 
 	Behavior behavior_ = Behavior::kRoot;
@@ -93,13 +100,23 @@ private:
 	//腕振りギミック用の媒介変数
 	float rollArmParameter_ = 0.0f;
 
-	//攻撃の全体フレーム
-	uint16_t kAttackTime_ = 60;
-	//予備動作
-	uint16_t kExtraOperationEndTime_ = 25;
-	//振り下ろし
-	uint16_t kSwingStartTime_ = 35;
-	uint16_t kSwingEndTime_ = 45;
-	//現在フレーム
-	uint16_t currentAttackFrame_ = 0;
+	//攻撃用ワーク
+	struct WorkAttack {
+		// 攻撃用の媒介変数
+		uint16_t attackParameter_ = 0;
+	};
+
+	WorkAttack workAttack_;
+
+	
+	
+
+	// ダッシュ用ワーク
+	struct  WorkDash {
+		//ダッシュ用の媒介変数
+		uint32_t dashParameter_ = 0;
+	};
+
+	WorkDash workDash_;
+	
 };

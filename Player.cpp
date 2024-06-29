@@ -50,11 +50,20 @@ void Player::BehaviorRootInitialize() {
 
 void Player::BehaviorAttackInitialize() {
 
+	workAttack_.attackParameter_ = 0;
 	worldTransformL_arm_.rotation_.x = -1.6f;
 	worldTransformR_arm_.rotation_.x = -1.6f;
 	worldTransformHammer_.rotation_.x = 1.6f;	
 
 }
+
+void Player::BehaviorDashInitialize() {
+
+	workDash_.dashParameter_ = 0;
+	worldTransform_.rotation_.y = targetAngle_;
+
+}
+
 
 void Player::InitializeFloatingGimmick() {
 
@@ -82,6 +91,9 @@ void Player::Update() {
 		case Behavior::kAttack:
 			BehaviorAttackInitialize();
 			break;
+		case Behavior::kDash:
+			BehaviorDashInitialize();
+			break;
 		}
 		//振るまいリクエストをリセット
 		behaviorRequest_ = std::nullopt;
@@ -95,6 +107,9 @@ void Player::Update() {
 		break;
 	case Behavior::kAttack:
 		BehaviorAttackUpdate();
+		break;
+	case Behavior::kDash:
+		BehaviorDashUpdate();
 		break;
 	}
 
@@ -150,6 +165,11 @@ void Player::BehaviorRootUpdate() {
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 			behaviorRequest_.emplace(Behavior::kAttack);
 		}
+
+		//ダッシュボタンを押したら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+			behaviorRequest_.emplace(Behavior::kDash);
+		}
 	}
 
 	// 最短角度補完
@@ -160,32 +180,62 @@ void Player::BehaviorRootUpdate() {
 
 void Player::BehaviorAttackUpdate() {
 
-	
+	// 攻撃の全体フレーム
+	const uint16_t kAttackTime = 60;
+	// 予備動作
+	const uint16_t kExtraOperationEndTime = 25;
+	// 振り下ろし
+	const uint16_t kSwingStartTime = 35;
+	const uint16_t kSwingEndTime = 45;
 
-	if (currentAttackFrame_ < kExtraOperationEndTime_) {
+	if (workAttack_.attackParameter_ < kExtraOperationEndTime) {
 		
-		float extoraOperationSpeed = 0.12f;
+		const float extoraOperationSpeed = 0.12f;
 
 		worldTransformL_arm_.rotation_.x -= extoraOperationSpeed;
 		worldTransformR_arm_.rotation_.x -= extoraOperationSpeed;
 		worldTransformHammer_.rotation_.x -= extoraOperationSpeed;
 	
-	}
-	else if (currentAttackFrame_ >= kSwingStartTime_ && currentAttackFrame_ < kSwingEndTime_) {
+	} else if (workAttack_.attackParameter_ >= kSwingStartTime && workAttack_.attackParameter_ < kSwingEndTime) {
 
-		float swingSpeed = 0.3f;
+		const float swingSpeed = 0.3f;
 
 		worldTransformL_arm_.rotation_.x += swingSpeed;
 		worldTransformR_arm_.rotation_.x += swingSpeed;
 		worldTransformHammer_.rotation_.x += swingSpeed;
 	}
 
-	currentAttackFrame_++;
+	workAttack_.attackParameter_++;
 
-	if (currentAttackFrame_ >= kAttackTime_) {
+	if (workAttack_.attackParameter_ >= kAttackTime) {
 	
-		currentAttackFrame_ = 0;
+		
 		behaviorRequest_.emplace(Behavior::kRoot);
+	}
+}
+
+void Player::BehaviorDashUpdate() {
+
+	// 速さ
+	const float speed = 5.0f;
+
+	Vector3 move = TransformNormal({0.0f, 0.0f, 1.0f}, MakeRotateYMatrix(worldTransform_.rotation_.y));
+
+	// 移動量に速さを反映
+	move = Multiply(speed, Normalize(move));
+
+	
+
+	// 移動
+	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+
+
+	// ダッシュの時間<frame>
+	const uint32_t behaviorDashTime = 18;
+
+	//規定の時間経過で通常行動に戻る
+	if (++workDash_.dashParameter_ >= behaviorDashTime) {
+		behaviorRequest_ = Behavior::kRoot;
 	}
 
 }

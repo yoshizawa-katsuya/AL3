@@ -74,6 +74,12 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 
 //ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+
+Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2);
+
+Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2);
+
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
 /*
 //グリッドの描画
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);

@@ -6,6 +6,7 @@
 #include "ViewProjection.h"
 #include "ImGuiManager.h"
 #include <cmath>
+#include "GlobalVariables.h"
 
 void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
 	
@@ -37,6 +38,14 @@ void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewP
 	InitializeFloatingGimmick();
 
 	InitializeRollArmGimmick();
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	//グループを追加
+	globalVariables->CreateGroup(groupName);
+	globalVariables->SetValue(groupName, "Test1", 90);
+	globalVariables->SetValue(groupName, "Test2", 1.0f);
+	globalVariables->SetValue(groupName, "Test3", Vector3(0.0, 3.0f, 0.0f));
 
 }
 

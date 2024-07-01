@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "GlobalVariables.h"
 
 GameScene::GameScene() {}
 

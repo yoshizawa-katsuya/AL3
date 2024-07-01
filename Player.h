@@ -15,6 +15,9 @@ public:
 	/// <param name="models_">モデルデータ配列</param>
 	void Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) override;
 
+	//調整項目の適用
+	void ApplyGlobalVariables();
+
 	//通常行動初期化
 	void BehaviorRootInitialize();
 
@@ -94,8 +97,17 @@ private:
 	//角度補完レート
 	const float angleCompletionRate_ = 0.2f;
 
+	// 浮遊移動のサイクル<frame>
+	int32_t floatingCycle_ = 90;
+
+	// 浮遊の振幅<m>
+	float floatingAmplitude_ = 0.3f;
+
 	//浮遊ギミック用の媒介変数
 	float floatingParameter_ = 0.0f;
+
+	// 腕振りの振幅<m>
+	float idleArmAngleMax_ = 0.5f;
 
 	//腕振りギミック用の媒介変数
 	float rollArmParameter_ = 0.0f;

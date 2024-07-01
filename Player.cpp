@@ -43,9 +43,27 @@ void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewP
 	const char* groupName = "Player";
 	//グループを追加
 	globalVariables->CreateGroup(groupName);
-	globalVariables->SetValue(groupName, "Test1", 90);
-	globalVariables->SetValue(groupName, "Test2", 1.0f);
-	globalVariables->SetValue(groupName, "Test3", Vector3(0.0, 3.0f, 0.0f));
+	globalVariables->AddItem(groupName, "Head Translation", worldTransformHead_.translation_);
+	globalVariables->AddItem(groupName, "ArmL Translation", worldTransformL_arm_.translation_);
+	globalVariables->AddItem(groupName, "ArmR Translation", worldTransformR_arm_.translation_);
+	globalVariables->AddItem(groupName, "floatingCycle", floatingCycle_);
+	globalVariables->AddItem(groupName, "floatingAmplitude", floatingAmplitude_);
+	globalVariables->AddItem(groupName, "idleArmAngleMax", idleArmAngleMax_);
+
+	ApplyGlobalVariables();
+
+}
+
+void Player::ApplyGlobalVariables() {
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	worldTransformHead_.translation_ = globalVariables->GetVector3Value(groupName, "Head Translation");
+	worldTransformL_arm_.translation_ = globalVariables->GetVector3Value(groupName, "ArmL Translation");
+	worldTransformR_arm_.translation_ = globalVariables->GetVector3Value(groupName, "ArmR Translation");
+	floatingCycle_ = globalVariables->GetIntValue(groupName, "floatingCycle");
+	floatingAmplitude_ = globalVariables->GetFloatValue(groupName, "floatingAmplitude");
+	idleArmAngleMax_ = globalVariables->GetFloatValue(groupName, "idleArmAngleMax");
 
 }
 
@@ -251,25 +269,23 @@ void Player::BehaviorDashUpdate() {
 
 void Player::UpdateFloatingGimmick() {
 
-	//浮遊移動のサイクル<frame>
-	const uint16_t cycle = 90;
+	
 
 	
 	//1フレームでのパラメーター加算値
-	const float step = 2.0f * static_cast<float>(M_PI) / cycle;
+	const float step = 2.0f * static_cast<float>(M_PI) / floatingCycle_;
 
 	//パラメーターを1ステップ分加算
 	floatingParameter_ += step;
 	//2πを超えたら0に戻す
 	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * static_cast<float>(M_PI));
 
-	//浮遊の振幅<m>
-	const float amplitude = 0.3f;
+	
 
 	
 
 	//浮遊を座標に反映
-	worldTransformBody_.translation_.y = std::sin(floatingParameter_) * amplitude;
+	worldTransformBody_.translation_.y = std::sin(floatingParameter_) * floatingAmplitude_;
 
 	
 
@@ -288,12 +304,11 @@ void Player::UpdateRollArmGimmick() {
 	// 2πを超えたら0に戻す
 	rollArmParameter_ = std::fmod(rollArmParameter_, 2.0f * static_cast<float>(M_PI));
 
-	// 腕振りの振幅<m>
-	const float amplitude = 0.5f;
+	
 
 	// 腕振りを座標に反映
-	worldTransformL_arm_.rotation_.x = std::sin(rollArmParameter_) * amplitude;
-	worldTransformR_arm_.rotation_.x = std::sin(rollArmParameter_) * amplitude;
+	worldTransformL_arm_.rotation_.x = std::sin(rollArmParameter_) * idleArmAngleMax_;
+	worldTransformR_arm_.rotation_.x = std::sin(rollArmParameter_) * idleArmAngleMax_;
 
 	
 

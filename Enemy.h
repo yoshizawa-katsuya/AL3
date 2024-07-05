@@ -26,6 +26,8 @@ public:
 	///  </summary>
 	void Draw() override;
 
+	Vector3 GetCentralCoordinate() const;
+
 private:
 
 	// ワールド変換データ

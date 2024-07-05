@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "Player.h"
+#include "LockOn.h"
 #include "Enemy.h"
 #include "Skydome.h"
 #include "Ground.h"
@@ -95,7 +96,10 @@ private: // メンバ変数
 	//自キャラ
 	std::unique_ptr<Player> player_;
 
+	//ロックオン
+	std::unique_ptr<LockOn> lockOn_;
+
 	//敵
-	std::unique_ptr<Enemy> enemy_;
+	std::list<std::unique_ptr<Enemy>> enemies_;
 	
 };

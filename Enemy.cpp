@@ -89,3 +89,13 @@ void Enemy::Draw() {
 
 	
 }
+
+Vector3 Enemy::GetCentralCoordinate() const{ 
+
+	//見た目上の中心点オフセット
+	const Vector3 offset = {0.0f, 2.0f, 0.0f};
+	//ワールド座標に変換
+	Vector3 worldPos = Transform(offset, worldTransform_.matWorld_);
+	return worldPos;
+
+}

@@ -2,6 +2,7 @@
 //#include "Struct.h"
 //#include <Novice.h>
 #include "Vector3.h"
+#include "ViewProjection.h"
 
 //加算
 Vector3 Add(const Vector3& v1, const Vector3& v2);
@@ -34,6 +35,9 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 
 //垂直なベクトルを求める
 Vector3 Perpendicular(const Vector3& vector);
+
+//スクリーン座標に変換
+Vector3 ConvertingToScreen(const Vector3& position, const ViewProjection& viewProjection);
 
 //最短角度補完
 float LeapShortAngle(float a, float b, float t);

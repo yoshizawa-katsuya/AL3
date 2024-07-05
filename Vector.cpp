@@ -2,6 +2,8 @@
 #include <math.h>
 #include <cmath>
 #include "Vector.h"
+#include "Matrix.h"
+#include "WinApp.h"
 
 Vector3 Add(const Vector3& v1, const Vector3& v2) {
 
@@ -120,6 +122,19 @@ Vector3 Perpendicular(const Vector3& vector) {
 		return { -vector.y, vector.x, 0.0f };
 	}
 	return { 0.0f, -vector.z, vector.y };
+}
+
+Vector3 ConvertingToScreen(const Vector3& position, const ViewProjection& viewProjection) { 
+
+	//ビューポート行列
+	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	Matrix4x4 matViewProjectionViewport = viewProjection.matView * viewProjection.matProjection * matViewport;
+
+	Vector3 ScreenPosition = Transform(position, matViewProjectionViewport);
+
+	return ScreenPosition;
+
 }
 
 float LeapShortAngle(float a, float b, float t) {

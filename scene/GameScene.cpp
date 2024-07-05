@@ -61,13 +61,23 @@ void GameScene::Initialize() {
 	player_->Initialize(playerModels, &viewProjection_);
 	player_->SetCameraViewProjection(&followCamera_->GetViewProjection());
 
+	//ロックオンの生成
+	lockOn_ = std::make_unique<LockOn>();
+	//ロックオンの初期化
+	lockOn_->Initialize();
+
 	//自キャラのワールドトランスフォームを追従カメラにセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
 	//敵の生成
-	enemy_ = std::make_unique<Enemy>();
-	//敵の初期化
-	enemy_->Initialize(enemyModels, &viewProjection_);
+	std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+	// 敵の初期化
+	enemy->Initialize(enemyModels, &viewProjection_);
+
+	enemies_.push_back(std::move(enemy));
+	
+	
+
 
 }
 
@@ -90,8 +100,14 @@ void GameScene::Update() {
 	//自キャラの更新
 	player_->Update();
 
+	//ロックオンの更新
+	lockOn_->Update(enemies_, viewProjection_);
+
 	//敵の更新
-	enemy_->Update();
+	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+		enemy->Update();
+	}
+	
 
 	// カメラの処理
 	if (isDebugCameraActive_) {
@@ -153,7 +169,9 @@ void GameScene::Draw() {
 	player_->Draw();
 
 	//敵の描画
-	enemy_->Draw();
+	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+		enemy->Draw();
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -166,6 +184,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	//ロックオンの描画
+	lockOn_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

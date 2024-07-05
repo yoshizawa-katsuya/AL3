@@ -13,6 +13,8 @@ void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewP
 	
 	BaseCharacter::Initialize(models, viewProjection);
 
+	velocity_ = {0.0f, 0.0f, 0.0f};
+
 	worldTransformBody_.Initialize();
 	worldTransformBody_.parent_ = &worldTransform_;
 
@@ -91,6 +93,19 @@ void Player::BehaviorDashInitialize() {
 
 }
 
+void Player::BehaviorJumpInitialize() {
+
+	worldTransformBody_.translation_.y = 0;
+	worldTransformL_arm_.rotation_.x = 0;
+	worldTransformR_arm_.rotation_.x = 0;
+
+	//ジャンプ初速
+	const float kJumpFirstSpeed = 1.0f;
+	//ジャンプ初速を与える
+	velocity_.y = kJumpFirstSpeed;
+
+}
+
 
 void Player::InitializeFloatingGimmick() {
 
@@ -121,6 +136,8 @@ void Player::Update() {
 		case Behavior::kDash:
 			BehaviorDashInitialize();
 			break;
+		case Behavior::kJump:
+			BehaviorJumpInitialize();
 		}
 		//振るまいリクエストをリセット
 		behaviorRequest_ = std::nullopt;
@@ -138,6 +155,8 @@ void Player::Update() {
 	case Behavior::kDash:
 		BehaviorDashUpdate();
 		break;
+	case Behavior::kJump:
+		BehaviorJumpUpdate();
 	}
 
 	//行列を更新
@@ -164,9 +183,9 @@ void Player::BehaviorRootUpdate() {
 		bool isMoving = false;
 
 		// 移動量
-		Vector3 move = {static_cast<float>(joyState.Gamepad.sThumbLX) / SHRT_MAX, 0.0f, static_cast<float>(joyState.Gamepad.sThumbLY) / SHRT_MAX};
+		velocity_ = {static_cast<float>(joyState.Gamepad.sThumbLX) / SHRT_MAX, 0.0f, static_cast<float>(joyState.Gamepad.sThumbLY) / SHRT_MAX};
 
-		if (Length(move) > thresholdValue) {
+		if (Length(velocity_) > thresholdValue) {
 			isMoving = true;
 		}
 
@@ -175,17 +194,17 @@ void Player::BehaviorRootUpdate() {
 			const float speed = 0.3f;
 
 			// 移動量に速さを反映
-			move = Multiply(speed, Normalize(move));
+			velocity_ = Multiply(speed, Normalize(velocity_));
 
 			Matrix4x4 rotationMatrix = MakeRotateYMatrix(cameraViewProjection_->rotation_.y);
 
-			move = TransformNormal(move, rotationMatrix);
+			velocity_ = TransformNormal(velocity_, rotationMatrix);
 
 			// 移動
-			worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+			worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
 
 			// 目標角度の算出
-			targetAngle_ = std::atan2(move.x, move.z);
+			targetAngle_ = std::atan2(velocity_.x, velocity_.z);
 		}
 
 		//攻撃入力
@@ -194,8 +213,13 @@ void Player::BehaviorRootUpdate() {
 		}
 
 		//ダッシュボタンを押したら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 			behaviorRequest_.emplace(Behavior::kDash);
+		}
+
+		//ジャンプボタンを押したら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+			behaviorRequest_.emplace(Behavior::kJump);
 		}
 	}
 
@@ -263,6 +287,28 @@ void Player::BehaviorDashUpdate() {
 	//規定の時間経過で通常行動に戻る
 	if (++workDash_.dashParameter_ >= behaviorDashTime) {
 		behaviorRequest_ = Behavior::kRoot;
+	}
+
+}
+
+void Player::BehaviorJumpUpdate() {
+
+	//移動
+	worldTransform_.translation_ += velocity_;
+	//重力加速度
+	const float kGravityAcceleration = 0.05f;
+	//加速度ベクトル
+	Vector3 accelerationVector = {0, -kGravityAcceleration, 0};
+	//加速する
+	velocity_ += accelerationVector;
+
+	//着地
+	if (worldTransform_.translation_.y <= 0.0f) {
+	
+		worldTransform_.translation_.y = 0;
+		//ジャンプ終了
+		behaviorRequest_ = Behavior::kRoot;
+
 	}
 
 }

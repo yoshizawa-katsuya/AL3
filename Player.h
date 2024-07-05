@@ -27,6 +27,9 @@ public:
 	//ダッシュ行動初期化
 	void BehaviorDashInitialize();
 
+	//ジャンプ行動初期化
+	void BehaviorJumpInitialize();
+
 	//浮遊ギミック初期化
 	void InitializeFloatingGimmick();
 
@@ -46,6 +49,9 @@ public:
 
 	//ダッシュ行動初期化
 	void BehaviorDashUpdate();
+
+	//ジャンプ行動更新
+	void BehaviorJumpUpdate();
 
 	//浮遊ギミック更新
 	void UpdateFloatingGimmick();
@@ -69,6 +75,7 @@ private:
 		kRoot,	//通常状態
 		kAttack,	//攻撃中
 		kDash,	//ダッシュ中
+		kJump,	//ジャンプ中
 	};
 
 	Behavior behavior_ = Behavior::kRoot;
@@ -91,6 +98,9 @@ private:
 
 	//カメラのビュープロジェクション
 	const ViewProjection* cameraViewProjection_ = nullptr;
+
+	//速度
+	Vector3 velocity_ = {};
 
 	//目標角度
 	float targetAngle_;

@@ -134,3 +134,13 @@ void LockOn::Draw() {
 	}
 
 }
+
+Vector3 LockOn::GetTargetPosition() const {
+	
+	if (target_) {
+		return target_->GetCentralCoordinate();
+	}
+
+	return Vector3();
+
+}

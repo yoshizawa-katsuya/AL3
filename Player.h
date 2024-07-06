@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "BaseCharacter.h"
 #include <optional>
+class LockOn;
 
 ///< summary>
 /// 自キャラ
@@ -67,6 +68,9 @@ public:
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
+
+	void SetLockOn(LockOn* lockOn) { lockOn_ = lockOn; }
+
 
 private:
 
@@ -141,4 +145,7 @@ private:
 
 	WorkDash workDash_;
 	
+	// ロックオン
+	const LockOn* lockOn_ = nullptr;
+
 };

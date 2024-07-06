@@ -1,6 +1,7 @@
 #pragma once
 #include <ViewProjection.h>
 #include <WorldTransform.h>
+class LockOn;
 
 ///<summary>
 ///追従カメラ
@@ -24,6 +25,8 @@ public:
 
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
+	void SetLockOn(LockOn* lockOn) { lockOn_ = lockOn; }
+
 private:
 
 	//ビュープロジェクション
@@ -37,5 +40,8 @@ private:
 
 	//目標角度
 	float destinationAngleY_;
+
+	//ロックオン
+	const LockOn* lockOn_ = nullptr;
 
 };

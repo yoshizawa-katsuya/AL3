@@ -34,6 +34,12 @@ public:
 	/// </summary>
 	void Draw();
 
+	//ロックオン対象の座標取得
+	Vector3 GetTargetPosition() const;
+
+	//ロックオン中か確認
+	bool ExistTarget() const { return target_ ? true : false; }
+
 private:
 
 	XINPUT_STATE prejoyState_;
@@ -50,7 +56,7 @@ private:
 	// 最小距離
 	float minDistance_ = 10.0f;
 	//最大距離
-	float maxDistance_ = 30.0f;
+	float maxDistance_ = 60.0f;
 	//角度範囲
 	float angleRange_ = 20.0f * kDegreeToRadian;
 

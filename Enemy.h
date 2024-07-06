@@ -26,6 +26,7 @@ public:
 	///  </summary>
 	void Draw() override;
 
+	//中心座標を取得
 	Vector3 GetCentralCoordinate() const;
 
 private:

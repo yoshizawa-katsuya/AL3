@@ -7,6 +7,7 @@
 #include "ImGuiManager.h"
 #include <cmath>
 #include "GlobalVariables.h"
+#include "LockOn.h"
 
 void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
 	
@@ -179,33 +180,49 @@ void Player::BehaviorRootUpdate() {
 
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 
-		const float thresholdValue = 0.7f;
-		bool isMoving = false;
+		if (static_cast<float>(joyState.Gamepad.sThumbLX) / SHRT_MAX != 0.0f || static_cast<float>(joyState.Gamepad.sThumbLY) / SHRT_MAX != 0.0f) {
+			const float thresholdValue = 0.7f;
+			bool isMoving = false;
 
-		// 移動量
-		velocity_ = {static_cast<float>(joyState.Gamepad.sThumbLX) / SHRT_MAX, 0.0f, static_cast<float>(joyState.Gamepad.sThumbLY) / SHRT_MAX};
+			// 移動量
+			velocity_ = {static_cast<float>(joyState.Gamepad.sThumbLX) / SHRT_MAX, 0.0f, static_cast<float>(joyState.Gamepad.sThumbLY) / SHRT_MAX};
 
-		if (Length(velocity_) > thresholdValue) {
-			isMoving = true;
+			if (Length(velocity_) > thresholdValue) {
+				isMoving = true;
+			}
+
+			if (isMoving) {
+				// 速さ
+				const float speed = 0.3f;
+
+				// 移動量に速さを反映
+				velocity_ = Multiply(speed, Normalize(velocity_));
+
+				Matrix4x4 rotationMatrix = MakeRotateYMatrix(cameraViewProjection_->rotation_.y);
+
+				velocity_ = TransformNormal(velocity_, rotationMatrix);
+
+				// 移動
+				worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
+
+				// 目標角度の算出
+				targetAngle_ = std::atan2(velocity_.x, velocity_.z);
+
+			}
+
+		} else if (lockOn_ && lockOn_->ExistTarget()) {
+		
+			// ロックオン座標
+			Vector3 lockOnPosition = lockOn_->GetTargetPosition();
+			// 追従対象からロックオン対象へのベクトル
+			Vector3 sub = lockOnPosition - worldTransform_.translation_;
+
+			// Y軸周り角度
+			targetAngle_ = std::atan2(sub.x, sub.z);
+
 		}
 
-		if (isMoving) {
-			// 速さ
-			const float speed = 0.3f;
-
-			// 移動量に速さを反映
-			velocity_ = Multiply(speed, Normalize(velocity_));
-
-			Matrix4x4 rotationMatrix = MakeRotateYMatrix(cameraViewProjection_->rotation_.y);
-
-			velocity_ = TransformNormal(velocity_, rotationMatrix);
-
-			// 移動
-			worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
-
-			// 目標角度の算出
-			targetAngle_ = std::atan2(velocity_.x, velocity_.z);
-		}
+		
 
 		//攻撃入力
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
@@ -231,6 +248,40 @@ void Player::BehaviorRootUpdate() {
 
 void Player::BehaviorAttackUpdate() {
 
+	// 移動速度
+	float speed = 2.0f;
+
+	if (lockOn_ && lockOn_->ExistTarget()) {
+
+		// ロックオン座標
+		Vector3 lockOnPosition = lockOn_->GetTargetPosition();
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = lockOnPosition - worldTransform_.translation_;
+
+		//距離
+		float distance = Length(sub);
+		//距離しきい値
+		const float threshold = 0.2f;
+
+		if (distance > threshold) {
+		
+			// Y軸周り角度
+			targetAngle_ = std::atan2(sub.x, sub.z);
+			// 最短角度補完
+			worldTransform_.rotation_.y = LeapShortAngle(worldTransform_.rotation_.y, targetAngle_, angleCompletionRate_);
+
+
+			//しきい値を超える速さなら補正する
+			if (speed > distance - threshold) {
+				//ロックオン対象へのめり込み防止
+				speed = distance - threshold;
+			}
+
+		}
+
+		
+	}
+
 	// 攻撃の全体フレーム
 	const uint16_t kAttackTime = 60;
 	// 予備動作
@@ -254,6 +305,16 @@ void Player::BehaviorAttackUpdate() {
 		worldTransformL_arm_.rotation_.x += swingSpeed;
 		worldTransformR_arm_.rotation_.x += swingSpeed;
 		worldTransformHammer_.rotation_.x += swingSpeed;
+
+
+		Vector3 move = TransformNormal({0.0f, 0.0f, 1.0f}, MakeRotateYMatrix(worldTransform_.rotation_.y));
+
+		// 移動量に速さを反映
+		move = Multiply(speed, Normalize(move));
+
+		// 移動
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+
 	}
 
 	workAttack_.attackParameter_++;

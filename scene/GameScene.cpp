@@ -68,6 +68,9 @@ void GameScene::Initialize() {
 
 	//自キャラのワールドトランスフォームを追従カメラにセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
+	//ロックオンをセット
+	followCamera_->SetLockOn(lockOn_.get());
+	player_->SetLockOn(lockOn_.get());
 
 	//敵の生成
 	std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();

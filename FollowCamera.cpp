@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include "Input.h"
 #include "Lerp.h"
+#include "LockOn.h"
 
 void FollowCamera::Initialize() {
 	viewProjection_.Initialize();
@@ -56,9 +57,25 @@ void FollowCamera::Update() {
 
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 	
-		float rotationSpeed = 0.1f;
+		//ロックオン中
+		if (lockOn_->ExistTarget()) {
+			//カメラをロックオン対象に向ける
 
-		destinationAngleY_ += static_cast<float>(joyState.Gamepad.sThumbRX) / SHRT_MAX * rotationSpeed;
+			//ロックオン座標
+			Vector3 lockOnPosition = lockOn_->GetTargetPosition();
+			//追従対象からロックオン対象へのベクトル
+			Vector3 sub = lockOnPosition - target_->translation_;
+
+			//Y軸周り角度
+			destinationAngleY_ = std::atan2(sub.x, sub.z);
+
+
+		} else {
+			//スティック入力で角度を変更
+			float rotationSpeed = 0.1f;
+
+			destinationAngleY_ += static_cast<float>(joyState.Gamepad.sThumbRX) / SHRT_MAX * rotationSpeed;
+		}
 
 		//右スティック押し込みでリセット
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {

@@ -225,17 +225,17 @@ void Player::BehaviorRootUpdate() {
 		
 
 		//攻撃入力
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
 			behaviorRequest_.emplace(Behavior::kAttack);
 		}
 
 		//ダッシュボタンを押したら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
 			behaviorRequest_.emplace(Behavior::kDash);
 		}
 
 		//ジャンプボタンを押したら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 			behaviorRequest_.emplace(Behavior::kJump);
 		}
 	}

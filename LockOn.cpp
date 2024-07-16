@@ -22,7 +22,7 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 		if (target_) {
 			// ロックオン解除処理
 			// ロックオンボタンをトリガーしたら
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER && !(prejoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)) {
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER && !(prejoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
 				//ロックオンを外す
 				target_ = nullptr;
 			} 
@@ -36,7 +36,7 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 		} else {
 
 			// ロックオンボタンをトリガーしたら
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER && !(prejoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)) {
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER && !(prejoyState_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
 				// ロックオン対象の検索
 				Search(enemies, viewProjection);
 			}

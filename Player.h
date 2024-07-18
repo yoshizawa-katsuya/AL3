@@ -67,6 +67,12 @@ public:
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	//衝突したとき
+	void OnCollision() override;
+
+	//中心座標を取得
+	Vector3 GetCenterPosition() const override;
+
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
 
 	void SetLockOn(LockOn* lockOn) { lockOn_ = lockOn; }

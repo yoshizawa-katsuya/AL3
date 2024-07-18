@@ -14,6 +14,7 @@
 #include "Skydome.h"
 #include "Ground.h"
 #include "FollowCamera.h"
+#include "CollisionManager.h"
 #include <memory>
 
 /// <summary>
@@ -47,7 +48,14 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
-private: // メンバ変数
+private:
+
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
+	void CheckAllCollisions();
+
+	// メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
@@ -64,6 +72,9 @@ private: // メンバ変数
 
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
+
+	//衝突マネージャ
+	std::unique_ptr<CollisionManager> collisionManager_;
 
 	//テクスチャハンドル
 	uint32_t textureHnadle_ = 0;

@@ -20,6 +20,9 @@ void GameScene::Initialize() {
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
 
+	//衝突マネージャの生成
+	collisionManager_ = std::make_unique<CollisionManager>();
+
 	//ファイル名を指定してテクスチャを読み込む
 	textureHnadle_ = TextureManager::Load("./Resources/mario.jpg");
 
@@ -111,6 +114,8 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 	
+	//衝突判定と応答
+	CheckAllCollisions();
 
 	// カメラの処理
 	if (isDebugCameraActive_) {
@@ -194,4 +199,21 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllCollisions() {
+
+	//衝突マネージャのリセット
+	collisionManager_->Reset();
+
+	//コライダーをリストに登録
+	collisionManager_->AddCollider(player_.get());
+	//敵すべてについて
+	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+		collisionManager_->AddCollider(enemy.get());
+	}
+
+	//衝突判定と応答
+	collisionManager_->CheckAllCollisions();
+
 }

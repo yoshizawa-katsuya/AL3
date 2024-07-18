@@ -1,8 +1,9 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Collider.h"
 
-class BaseCharacter {
+class BaseCharacter : public Collider{
 public:
 
 	/// <summary>
@@ -28,6 +29,8 @@ public:
 	/// <returns>ワールド変換データ</returns>
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 	
+	//中心座標を取得
+	virtual Vector3 GetCenterPosition() const override;
 
 protected:
 	

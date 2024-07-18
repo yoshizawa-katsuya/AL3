@@ -432,3 +432,19 @@ void Player::Draw() {
 	models_[kModelIndexHammer]->Draw(worldTransformHammer_, *viewProjection_);
 	}
 }
+
+void Player::OnCollision() {
+
+	behaviorRequest_.emplace(Behavior::kJump);
+
+}
+
+Vector3 Player::GetCenterPosition() const { 
+
+	//ローカル座標でのオフセット
+	const Vector3 offset = {0.0f, 1.5f, 0.0f};
+	//ワールド座標に変換
+	Vector3 worldPos = Transform(offset, worldTransform_.matWorld_);
+	return worldPos;
+
+}

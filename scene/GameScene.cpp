@@ -22,6 +22,7 @@ void GameScene::Initialize() {
 
 	//衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
 
 	//ファイル名を指定してテクスチャを読み込む
 	textureHnadle_ = TextureManager::Load("./Resources/mario.jpg");
@@ -114,6 +115,9 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 	
+	//デバッグ表示用にワールドトランスフォームを更新
+	collisionManager_->UpdateWorldTransform();
+
 	//衝突判定と応答
 	CheckAllCollisions();
 
@@ -167,6 +171,9 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	
+	//当たり判定の表示
+	collisionManager_->Draw(viewProjection_);
+
 	// スカイドームの描画
 	skydome_->Draw();
 

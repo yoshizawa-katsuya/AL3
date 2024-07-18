@@ -58,6 +58,11 @@ void GlobalVariables::Update() {
 				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10.0f, 10.0f);
 			}
 
+			// bool型の値を保持していれば
+			else if (std::holds_alternative<bool>(item)) {
+				bool* ptr = std::get_if<bool>(&item);
+				ImGui::Checkbox(itemName.c_str(), ptr);
+			}
 		}
 
 		//改行
@@ -118,6 +123,18 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 	group[key] = newItem;
 }
 
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, bool value) {
+
+	// グループの参照を取得
+	Group& group = datas_[groupName];
+	// 新しい項目のデータを設定
+	Item newItem{};
+	newItem = value;
+	// 設定した項目をstd::mapに追加
+	group[key] = newItem;
+
+}
+
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, int32_t value) {
 
 	if (datas_.find(groupName)->second.find(key) == datas_.find(groupName)->second.end()) {
@@ -138,6 +155,14 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 	if (datas_.find(groupName)->second.find(key) == datas_.find(groupName)->second.end()) {
 		SetValue(groupName, key, value);
 	}
+}
+
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, bool value) {
+
+	if (datas_.find(groupName)->second.find(key) == datas_.find(groupName)->second.end()) {
+		SetValue(groupName, key, value);
+	}
+
 }
 
 void GlobalVariables::SaveFile(const std::string& groupName) {
@@ -183,6 +208,11 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 			root[groupName][itemName] = json::array({value.x, value.y, value.z});
 		}
 
+		// bool型の値を保持していれば
+		else if (std::holds_alternative<bool>(item)) {
+			// boolの値を登録
+			root[groupName][itemName] = std::get<bool>(item);
+		}
 	}
 
 	//ディレクトリがなければ作成する
@@ -298,6 +328,13 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			Vector3 value = {itItem->at(0), itItem->at(1), itItem->at(2)};
 			SetValue(groupName, itemName, value);
 		}
+
+		// bool型の値を保持していれば
+		else if (itItem->is_boolean()) {
+			// bool型の値を登録
+			bool value = itItem->get<bool>();
+			SetValue(groupName, itemName, value);
+		}
 	}
 
 }
@@ -337,4 +374,17 @@ Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std
 	assert(group.find(key) != group.end());
 
 	return std::get<Vector3>(group.at(key));
+}
+
+bool GlobalVariables::GetBoolValue(const std::string& groupName, const std::string& key) const {
+	
+	assert(datas_.find(groupName) != datas_.end());
+
+	// グループの参照を取得
+	const Group& group = datas_.at(groupName);
+
+	assert(group.find(key) != group.end());
+
+	return std::get<bool>(group.at(key));
+
 }

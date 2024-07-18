@@ -1,6 +1,54 @@
 #include "CollisionManager.h"
 #include "Vector.h"
 #include "Matrix.h"
+#include "GlobalVariables.h"
+
+void CollisionManager::Initialize() {
+
+	model_.reset(Model::CreateFromOBJ("Collider", true));
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	
+	// グループを追加
+	globalVariables->CreateGroup(groupName_);
+	globalVariables->AddItem(groupName_, "isDrawCollider", isDrawCollider_);
+	isDrawCollider_ = globalVariables->GetBoolValue(groupName_, "isDrawCollider");
+
+}
+
+void CollisionManager::UpdateWorldTransform() {
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	isDrawCollider_ = globalVariables->GetBoolValue(groupName_, "isDrawCollider");
+
+
+	//非表示なら抜ける
+	if (!isDrawCollider_) {
+		return;
+	}
+
+	//全てのコライダーについて
+	for (Collider* collider : colliders_) {
+		//更新
+		collider->UpdateWorldTransform();
+	}
+
+}
+
+void CollisionManager::Draw(const ViewProjection& viewProjection) {
+
+	// 非表示なら抜ける
+	if (!isDrawCollider_) {
+		return;
+	}
+
+	// 全てのコライダーについて
+	for (Collider* collider : colliders_) {
+		// 描画
+		collider->Draw(model_.get(), viewProjection);
+	}
+
+}
 
 void CollisionManager::Reset() {
 

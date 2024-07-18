@@ -48,7 +48,7 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 		//ロックオンマークの座標計算
 		
 		//敵のロックオン座標取得
-		Vector3 positionWorld = target_->GetCentralCoordinate();
+		Vector3 positionWorld = target_->GetCenterPosition();
 		//ワールド座標からスクリーン座標に変換
 		Vector3 positionScreen = ConvertingToScreen(positionWorld, viewProjection);
 		//Vector2に格納
@@ -71,7 +71,7 @@ void LockOn::Search(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 	for (const std::unique_ptr<Enemy>& enemy : enemies) {
 		
 		//敵のロックオン座標取得
-		Vector3 positionWorld = enemy->GetCentralCoordinate();
+		Vector3 positionWorld = enemy->GetCenterPosition();
 
 		//ワールド→ビュー座標変換
 		Vector3 positionView = Transform(positionWorld, viewProjection.matView);
@@ -107,7 +107,7 @@ void LockOn::Search(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 bool LockOn::IsOutsideRange(const ViewProjection& viewProjection) { 
 
 	// 敵のロックオン座標取得
-	Vector3 positionWorld = target_->GetCentralCoordinate();
+	Vector3 positionWorld = target_->GetCenterPosition();
 
 	// ワールド→ビュー座標変換
 	Vector3 positionView = Transform(positionWorld, viewProjection.matView);
@@ -138,7 +138,7 @@ void LockOn::Draw() {
 Vector3 LockOn::GetTargetPosition() const {
 	
 	if (target_) {
-		return target_->GetCentralCoordinate();
+		return target_->GetCenterPosition();
 	}
 
 	return Vector3();

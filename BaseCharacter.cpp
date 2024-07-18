@@ -3,6 +3,8 @@
 
 void BaseCharacter::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
 
+	Collider::Initialize();
+
 	// NULLポインタチェック
 	for (Model* model : models) {
 		assert(model);

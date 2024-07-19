@@ -1,5 +1,6 @@
 #pragma once
 #include "Collider.h"
+#include "HittingRecord.h"
 
 /// <summary>
 /// ハンマー
@@ -19,6 +20,9 @@ public:
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision([[maybe_unused]] Collider* other) override;
 
+	//接初期録を抹消
+	void HittingRecordClear();
+
 	Vector3 GetCenterPosition() const override;
 
 	const Vector3& GetRotation() const { return worldTransform_.rotation_; }
@@ -33,5 +37,8 @@ private:
 
 	Model* model_ = nullptr;
 	WorldTransform worldTransform_;
+
+	//接触記録
+	HittingRecord hittengRecord_;
 
 };

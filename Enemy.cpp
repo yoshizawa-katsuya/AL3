@@ -4,6 +4,17 @@
 #include <algorithm>
 #include "CollisionTypeIdDef.h"
 
+uint32_t Enemy::nextSerialNumber_ = 0;
+
+Enemy::Enemy() {
+
+	//シリアル番号を振る
+	serialNumber_ = nextSerialNumber_;
+	//次の番号を1加算
+	++nextSerialNumber_;
+
+}
+
 void Enemy::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
 
 	BaseCharacter::Initialize(models, viewProjection);

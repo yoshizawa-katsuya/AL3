@@ -4,6 +4,9 @@
 class Enemy : public BaseCharacter{
 public:
 
+	//デフォルトコンストラクタ
+	Enemy();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -41,6 +44,9 @@ public:
 	//中心座標を取得
 	Vector3 GetCenterPosition() const override;
 
+	//シリアルナンバーを取得
+	uint32_t GetSerialNumber() const { return serialNumber_; }
+
 private:
 
 	// ワールド変換データ
@@ -61,5 +67,11 @@ private:
 
 	//ヒットエフェクトモデル
 	std::unique_ptr<Model> modelHitEffect_;
+
+	//シリアルナンバー
+	uint32_t serialNumber_ = 0;
+
+	//次のシリアルナンバー
+	static uint32_t nextSerialNumber_;
 
 };

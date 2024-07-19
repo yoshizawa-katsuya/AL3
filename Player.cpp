@@ -88,6 +88,7 @@ void Player::BehaviorAttackInitialize() {
 	worldTransformR_arm_.rotation_.x = -1.6f;
 	hammer_->SetRotation({1.6f, 0.0f, 0.0f});
 	//worldTransformHammer_.rotation_.x = 1.6f;	
+	hammer_->HittingRecordClear();
 
 }
 

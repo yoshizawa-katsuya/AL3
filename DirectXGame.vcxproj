@@ -116,6 +116,7 @@
     <ClCompile Include="FollowCamera.cpp" />
     <ClCompile Include="GlobalVariables.cpp" />
     <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="Hammer.cpp" />
     <ClCompile Include="Lerp.cpp" />
     <ClCompile Include="LockOn.cpp" />
     <ClCompile Include="main.cpp" />
@@ -153,10 +154,12 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="CollisionTypeIdDef.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FollowCamera.h" />
     <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="Ground.h" />
+    <ClInclude Include="Hammer.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="Lerp.h" />
     <ClInclude Include="LockOn.h" />

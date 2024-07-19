@@ -4,6 +4,7 @@
 #include "BaseCharacter.h"
 #include <optional>
 class LockOn;
+#include "Hammer.h"
 
 ///< summary>
 /// 自キャラ
@@ -68,7 +69,7 @@ public:
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	//衝突したとき
-	void OnCollision() override;
+	void OnCollision([[maybe_unused]] Collider* other) override;
 
 	//中心座標を取得
 	Vector3 GetCenterPosition() const override;
@@ -77,6 +78,7 @@ public:
 
 	void SetLockOn(LockOn* lockOn) { lockOn_ = lockOn; }
 
+	Hammer* GatHammer() { return hammer_.get(); }
 
 private:
 
@@ -98,7 +100,7 @@ private:
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
-	WorldTransform worldTransformHammer_;
+	std::unique_ptr<Hammer> hammer_;
 
 	const uint16_t kModelIndexBody = 0;
 	const uint16_t kModelIndexHead = 1;

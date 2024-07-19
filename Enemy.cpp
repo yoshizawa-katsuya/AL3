@@ -2,10 +2,12 @@
 #include "Matrix.h"
 #include "Vector.h"
 #include <algorithm>
+#include "CollisionTypeIdDef.h"
 
 void Enemy::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
 
 	BaseCharacter::Initialize(models, viewProjection);
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kEnemy));
 
 	InitializeRollArmGimmick();
 
@@ -20,11 +22,23 @@ void Enemy::Initialize(const std::vector<Model*>& models, ViewProjection* viewPr
 	worldTransformR_arm_.translation_ = Vector3(1.7f, 1.3f, 0.0f);
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
+	InitializeHitEffect();
+	
 }
 
 void Enemy::InitializeRollArmGimmick() {
 
 	rollArmParameter_ = 0.0f;
+
+}
+
+void Enemy::InitializeHitEffect() {
+
+	modelHitEffect_.reset(Model::CreateSphere());
+	worldTransformHitEffect_.Initialize();
+	worldTransformHitEffect_.translation_ = Vector3(0.0f, 1.3f, 0.0f);
+	worldTransformHitEffect_.parent_ = &worldTransform_;
+	hitEffectParameter_ = 0.0f;
 
 }
 
@@ -44,6 +58,9 @@ void Enemy::Update() {
 
 	//パーツギミック
 	UpdateRollArmGimmick();
+
+	//ヒットエフェクト
+	UpdateHitEffect();
 
 	BaseCharacter::Update();
 
@@ -80,14 +97,45 @@ void Enemy::UpdateRollArmGimmick() {
 
 }
 
+void Enemy::UpdateHitEffect() {
+
+	if (hitEffectParameter_ <= 0.0f) {
+		return;
+	}
+
+	modelHitEffect_->SetAlpha(hitEffectParameter_);
+	float scale;
+	scale = 5.0f - (hitEffectParameter_ * 2.0f);
+	worldTransformHitEffect_.scale_ = Vector3(scale, scale, scale);
+	hitEffectParameter_ -= 1.0f / 60.0f;
+	worldTransformHitEffect_.UpdateMatrix();
+
+}
+
 void Enemy::Draw() {
 
 	models_[kModelIndexBody]->Draw(worldTransformBody_, *viewProjection_);
 	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, *viewProjection_);
 	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, *viewProjection_);
 	
-
+	DrawHitEffect();
 	
+}
+
+void Enemy::DrawHitEffect() {
+
+	if (hitEffectParameter_ <= 0.0f) {
+		return;
+	}
+
+	modelHitEffect_->Draw(worldTransformHitEffect_, *viewProjection_);
+
+}
+
+void Enemy::Hit() {
+
+	hitEffectParameter_ = 1.0f;
+
 }
 
 Vector3 Enemy::GetCenterPosition() const{ 

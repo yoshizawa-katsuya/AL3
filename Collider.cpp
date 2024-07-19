@@ -10,6 +10,7 @@ void Collider::UpdateWorldTransform() {
 
 	//ワールド座標をワールドトランスフォームに適用
 	worldTransform_.translation_ = GetCenterPosition();
+	worldTransform_.scale_ = {radius_, radius_, radius_};
 	worldTransform_.UpdateMatrix();
 
 }

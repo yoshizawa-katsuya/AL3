@@ -31,10 +31,11 @@ void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewP
 	worldTransformR_arm_.translation_ = Vector3(1.3f, 2.8f, 0.0f);
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
-	worldTransformHammer_.Initialize();
-	worldTransformHammer_.translation_ = Vector3(0.0, 3.0f, 0.0f);
-	worldTransformHammer_.parent_ = &worldTransformBody_;
-
+	hammer_ = std::make_unique<Hammer>();
+	hammer_->Initialize(models_[kModelIndexHammer]);
+	//hammer_->SetTranslation(Vector3(0.0, 0.0f, 0.0f));
+	hammer_->SetParent(&worldTransformBody_);
+	
 	viewProjection_ = viewProjection;
 	targetAngle_ = worldTransform_.rotation_.y;
 
@@ -72,6 +73,8 @@ void Player::ApplyGlobalVariables() {
 
 void Player::BehaviorRootInitialize() {
 
+	hammer_->SetRotation({0.0f, 0.0f, 0.0f});
+
 	InitializeFloatingGimmick();
 
 	InitializeRollArmGimmick();
@@ -83,7 +86,8 @@ void Player::BehaviorAttackInitialize() {
 	workAttack_.attackParameter_ = 0;
 	worldTransformL_arm_.rotation_.x = -1.6f;
 	worldTransformR_arm_.rotation_.x = -1.6f;
-	worldTransformHammer_.rotation_.x = 1.6f;	
+	hammer_->SetRotation({1.6f, 0.0f, 0.0f});
+	//worldTransformHammer_.rotation_.x = 1.6f;	
 
 }
 
@@ -166,7 +170,7 @@ void Player::Update() {
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
-	worldTransformHammer_.UpdateMatrix();
+	hammer_->UpdateWorldTransform();
 }
 
 void Player::BehaviorRootUpdate() {
@@ -296,7 +300,8 @@ void Player::BehaviorAttackUpdate() {
 
 		worldTransformL_arm_.rotation_.x -= extoraOperationSpeed;
 		worldTransformR_arm_.rotation_.x -= extoraOperationSpeed;
-		worldTransformHammer_.rotation_.x -= extoraOperationSpeed;
+		hammer_->SetRotation({hammer_->GetRotation().x - extoraOperationSpeed, 0.0f, 0.0f});
+		//worldTransformHammer_.rotation_.x -= extoraOperationSpeed;
 	
 	} else if (workAttack_.attackParameter_ >= kSwingStartTime && workAttack_.attackParameter_ < kSwingEndTime) {
 
@@ -304,7 +309,8 @@ void Player::BehaviorAttackUpdate() {
 
 		worldTransformL_arm_.rotation_.x += swingSpeed;
 		worldTransformR_arm_.rotation_.x += swingSpeed;
-		worldTransformHammer_.rotation_.x += swingSpeed;
+		hammer_->SetRotation({hammer_->GetRotation().x + swingSpeed, 0.0f, 0.0f});
+		//worldTransformHammer_.rotation_.x += swingSpeed;
 
 
 		Vector3 move = TransformNormal({0.0f, 0.0f, 1.0f}, MakeRotateYMatrix(worldTransform_.rotation_.y));
@@ -321,7 +327,6 @@ void Player::BehaviorAttackUpdate() {
 
 	if (workAttack_.attackParameter_ >= kAttackTime) {
 	
-		
 		behaviorRequest_.emplace(Behavior::kRoot);
 	}
 }
@@ -428,14 +433,14 @@ void Player::Draw() {
 	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, *viewProjection_);
 
 	if (behavior_ == Behavior::kAttack) {
-	
-	models_[kModelIndexHammer]->Draw(worldTransformHammer_, *viewProjection_);
+		hammer_->Draw(*viewProjection_);
+		//models_[kModelIndexHammer]->Draw(worldTransformHammer_, *viewProjection_);
 	}
 }
 
-void Player::OnCollision() {
+void Player::OnCollision([[maybe_unused]] Collider* other) {
 
-	behaviorRequest_.emplace(Behavior::kJump);
+	//behaviorRequest_.emplace(Behavior::kJump);
 
 }
 

@@ -15,6 +15,7 @@
 #include "Enemy.h"
 #include "MapChipField.h"
 #include "CameraController.h"
+#include "DeathParticle.h"
 
 /// <summary>
 /// ゲームシーン
@@ -68,6 +69,7 @@ private: // メンバ変数
 	Model* modelSkydome_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelDeathParticle_ = nullptr;
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
@@ -89,7 +91,7 @@ private: // メンバ変数
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 
-	
+	DeathParticle* deathParticle_ = nullptr;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;

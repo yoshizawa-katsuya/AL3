@@ -23,10 +23,14 @@ GameScene::~GameScene() {
 
 	delete modelEnemy_;
 
+	delete modelDeathParticle_;
+
 	delete skydome_;
 
 
 	delete player_;
+
+	delete deathParticle_;
 
 	//delete enemy_;
 	for (Enemy* enemy : enemies_) {
@@ -49,6 +53,7 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
+	modelDeathParticle_ = Model::CreateFromOBJ("DeathParticle", true);
 
 	//スカイドームの生成
 	skydome_ = new Skydome();
@@ -61,7 +66,7 @@ void GameScene::Initialize() {
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
-	Vector3 PlayerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	Vector3 PlayerPosition = mapChipField_->GetMapChipPositionByIndex(4, 14);
 	player_->Initialize(modelPlayer_, &viewProjection_, PlayerPosition);
 	player_->SetMapChipField(mapChipField_);
 
@@ -103,7 +108,8 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	
-	
+	deathParticle_ = new DeathParticle;
+	deathParticle_->Initialize(modelDeathParticle_, &viewProjection_, PlayerPosition);
 
 
 	//デバッグカメラの生成
@@ -118,6 +124,10 @@ void GameScene::Update() {
 
 	//自キャラの更新
 	player_->Update();
+
+	if (deathParticle_) {
+		deathParticle_->Update();
+	}
 
 	//敵の更新	
 	//enemy_->Update();
@@ -245,7 +255,15 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	// スカイドームの描画
+	skydome_->Draw();
+
 	player_->Draw();
+
+	if (deathParticle_) {
+		deathParticle_->Draw();
+	}
 
 	//敵の描画
 	//enemy_->Draw();
@@ -254,8 +272,7 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 
-	//スカイドームの描画
-	skydome_->Draw();
+	
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

@@ -430,8 +430,9 @@ void Player::OnCollision(const Enemy* enemy) {
 
 	(void)enemy;
 	//ジャンプ開始
-	velocity_.y = kJumpAcceleration;
-	onGround_ = false;
+	//velocity_.y = kJumpAcceleration;
+	//onGround_ = false;
+
 }
 
 WorldTransform& Player::GetWorldTransform() { return worldTransform_; }

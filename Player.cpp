@@ -409,10 +409,43 @@ Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
 	
 }
 
+Vector3 Player::GetWorldPosition() { 
+	//ワールド座標を入れる変数
+	Vector3 worldPos;
+	//ワールド行列の平行移動成分を取得
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
 void Player::Draw() {
 
 	model_->Draw(worldTransform_, *viewProjection_);
 
 }
 
+void Player::OnCollision(const Enemy* enemy) {
+
+	(void)enemy;
+	//ジャンプ開始
+	velocity_.y = kJumpAcceleration;
+	onGround_ = false;
+}
+
 WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
+
+AABB Player::GetAABB() {
+	AABB aabb;
+	Vector3 worldPos = GetWorldPosition();
+	aabb.min.x = worldPos.x - (kWidth / 2.0f);
+	aabb.min.y = worldPos.y - (kWidth / 2.0f);
+	aabb.min.z = worldPos.z - (kWidth / 2.0f);
+
+	aabb.max.x = worldPos.x + (kWidth / 2.0f);
+	aabb.max.y = worldPos.y + (kWidth / 2.0f);
+	aabb.max.z = worldPos.z + (kWidth / 2.0f);
+
+	return aabb;
+}

@@ -49,6 +49,9 @@ public: // メンバ関数
 
 	void GeneratrBlocks();
 
+	//全ての当たり判定を行う
+	void CheckAllCollisions();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -95,6 +98,9 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 
 	//敵
-	Enemy* enemy_ = nullptr;
+	//Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
+
+	const uint32_t kMaxEnemyNum_ = 3;
 
 };

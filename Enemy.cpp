@@ -43,3 +43,35 @@ void Enemy::Draw() {
 	model_->Draw(worldTransform_, *viewProjection_);
 
 }
+
+void Enemy::OnCollision(const Player* player) {
+
+	(void)player;
+
+}
+
+Vector3 Enemy::GetWorldPosition() { 
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+AABB Enemy::GetAABB() { 
+	AABB aabb;
+	Vector3 worldPos = GetWorldPosition();
+	aabb.min.x = worldPos.x - (kWidth / 2.0f);
+	aabb.min.y = worldPos.y - (kWidth / 2.0f);
+	aabb.min.z = worldPos.z - (kWidth / 2.0f);
+
+	aabb.max.x = worldPos.x + (kWidth / 2.0f);
+	aabb.max.y = worldPos.y + (kWidth / 2.0f);
+	aabb.max.z = worldPos.z + (kWidth / 2.0f);
+
+	return aabb;
+}

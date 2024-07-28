@@ -1,5 +1,5 @@
 #pragma once
-//#include "Struct.h"
+#include "Struct.h"
 #include <assert.h>
 //#include <Novice.h>
 #include <math.h>
@@ -71,3 +71,6 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 
 //ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+
+// AABB同士の衝突判定
+bool IsCollision(const AABB& aabb1, const AABB& aabb2);

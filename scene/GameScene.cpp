@@ -28,8 +28,10 @@ GameScene::~GameScene() {
 
 	delete player_;
 
-	delete enemy_;
-
+	//delete enemy_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 	delete mapChipField_;
 
 	delete cameraController_;
@@ -64,10 +66,19 @@ void GameScene::Initialize() {
 	player_->SetMapChipField(mapChipField_);
 
 	//敵の生成
+	/*
 	enemy_ = new Enemy();
 	//敵の初期化
 	Vector3 EnemyPosition = mapChipField_->GetMapChipPositionByIndex(10, 18);
 	enemy_->Initialize(modelEnemy_, &viewProjection_, EnemyPosition);
+	*/
+	for (uint32_t i = 0; i < kMaxEnemyNum_; ++i) {
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(10 + (i * 2), 18);
+		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+
+		enemies_.push_back(newEnemy);
+	}
 
 	//カメラコントローラの生成
 	cameraController_ = new CameraController;
@@ -109,8 +120,11 @@ void GameScene::Update() {
 	player_->Update();
 
 	//敵の更新	
-	enemy_->Update();
-	
+	//enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
 	//ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -148,6 +162,8 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
+	CheckAllCollisions();
+
 }
 
 void GameScene::GeneratrBlocks() {
@@ -172,6 +188,34 @@ void GameScene::GeneratrBlocks() {
 			}
 		}
 	}
+
+}
+
+void GameScene::CheckAllCollisions() {
+
+	#pragma region
+
+	//判定対象1と2の座標
+	AABB aabb1, aabb2;
+
+	//自キャラの座標
+	aabb1 = player_->GetAABB();
+
+	//自キャラと敵キャラ全ての当たり判定
+	for (Enemy* enemy : enemies_) {
+		//敵キャラの座標
+		aabb2 = enemy->GetAABB();
+
+		//AABB同士の衝突判定
+		if (IsCollision(aabb1, aabb2)) {
+			//自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision(enemy);
+			//敵キャラの衝突時コールバックを呼び出す
+			enemy->OnCollision(player_);
+		}
+	}
+
+	#pragma endregion
 
 }
 
@@ -204,7 +248,11 @@ void GameScene::Draw() {
 	player_->Draw();
 
 	//敵の描画
-	enemy_->Draw();
+	//enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+	
+		enemy->Draw();
+	}
 
 	//スカイドームの描画
 	skydome_->Draw();

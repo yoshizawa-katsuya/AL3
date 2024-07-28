@@ -5,8 +5,10 @@
 #include <numbers>
 #include <Input.h>
 #include <algorithm>
+#include "Struct.h"
 
 class MapChipField;
+class Enemy;
 
 ///<summary>
 ///自キャラ
@@ -70,16 +72,25 @@ public:
 
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
 	/// <summary>
 	/// 描画
 	///  </summary>
 	void Draw();
+
+	//衝突応答
+	void OnCollision(const Enemy* enemy);
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 	WorldTransform& GetWorldTransform();
 
 	const Vector3& GetVelocity() const { return velocity_; }
+
+	//AABBを取得
+	AABB GetAABB();
 
 private:
 	

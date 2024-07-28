@@ -5,6 +5,8 @@
 #include <numbers>
 #include <Input.h>
 #include <algorithm>
+#include "Struct.h"
+class Player;
 
 ///<summary>
 ///敵
@@ -19,10 +21,22 @@ public:
 
 	void Draw();
 
+	//衝突応答
+	void OnCollision(const Player* player);
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	// AABBを取得
+	AABB GetAABB();
+
 private:
 	
 	//歩行の速さ
 	static inline const float kWalkSpeed = 0.01f;
+
+	const float kWidth = 0.8f;
+	const float kHeight = 0.8f;
 
 	//速度
 	Vector3 velocity_ = {};

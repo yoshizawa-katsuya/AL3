@@ -28,6 +28,9 @@ public:
 	///  </summary>
 	void Draw();
 
+	// デスフラグのgetter
+	bool GetIsFinished() const { return isFinished_; }
+
 private:
 
 	//パーティクルの個数

@@ -429,6 +429,9 @@ void Player::Draw() {
 void Player::OnCollision(const Enemy* enemy) {
 
 	(void)enemy;
+
+	isDead_ = true;
+
 	//ジャンプ開始
 	//velocity_.y = kJumpAcceleration;
 	//onGround_ = false;

@@ -48,10 +48,22 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	//ゲームプレイフェーズの更新
+	void PlayPhaseUpdate();
+
+	//デス演出フェーズの更新
+	void DeathPhaseUpdate();
+
+	void ChangePhase();
+
 	void GeneratrBlocks();
 
 	//全ての当たり判定を行う
 	void CheckAllCollisions();
+
+	// デスフラグのgetter
+	bool GetIsFinished() const { return isFinished_; }
+
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -62,7 +74,14 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	
-	
+	//ゲームのフェーズ(型)
+	enum class Phase {
+		kPlay,	//ゲームプレイ
+		kDeath,	//デス演出
+	};
+
+	//ゲームの現在フェーズ
+	Phase phase_;
 
 	//3Dモデルデータ
 	Model* model_ = nullptr;
@@ -105,4 +124,6 @@ private: // メンバ変数
 
 	const uint32_t kMaxEnemyNum_ = 3;
 
+	// 終了フラグ
+	bool isFinished_ = false;
 };

@@ -92,6 +92,9 @@ public:
 	//AABBを取得
 	AABB GetAABB();
 
+	//デスフラグのgetter
+	bool GetIsDead() const { return isDead_; }
+
 private:
 	
 	
@@ -150,5 +153,8 @@ private:
 
 	//マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
+
+	//デスフラグ
+	bool isDead_ = false;
 
 };

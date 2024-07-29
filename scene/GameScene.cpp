@@ -48,6 +48,9 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//ゲームプレイフェーズから開始
+	phase_ = Phase::kPlay;
+
 	// 3Dモデルの生成
 	model_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
@@ -107,11 +110,6 @@ void GameScene::Initialize() {
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	
-	deathParticle_ = new DeathParticle;
-	deathParticle_->Initialize(modelDeathParticle_, &viewProjection_, PlayerPosition);
-
-
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
@@ -119,31 +117,22 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	//スカイドームの更新
-	skydome_->Update();
+	switch (phase_) {
+	case Phase::kPlay:
 
-	//自キャラの更新
-	player_->Update();
+		PlayPhaseUpdate();
 
-	if (deathParticle_) {
-		deathParticle_->Update();
-	}
+		break;
 
-	//敵の更新	
-	//enemy_->Update();
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}
+	case Phase::kDeath:
+	
+		DeathPhaseUpdate();
 
-	//ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock) {
-				continue;
-			}
-			worldTransformBlock->UpdateMatrix();
-		}
-	}
+		break;
+	
+	default:
+		break;
+	}	
 
 	#ifdef _DEBUG
 
@@ -155,24 +144,129 @@ void GameScene::Update() {
 
 	#endif
 
+	
+
+	
+
+}
+
+void GameScene::PlayPhaseUpdate() {
+
+
+	// スカイドームの更新
+	skydome_->Update();
+
+	// 自キャラの更新
+	player_->Update();
+
+	// 敵の更新
+	// enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
 	if (isDebuCameraActive_) {
 
 		// デバッグカメラの更新
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		//ビュープロジェクション行列の転送
+		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
-	} else {
+	} 
+	else {
 
 		// カメラコントローラの更新
 		cameraController_->Update();
 		viewProjection_.translation_ = cameraController_->GetViewProjection().translation_;
-		//ビュープロジェクションの更新と転送
+		// ビュープロジェクションの更新と転送
 		viewProjection_.UpdateMatrix();
 	}
 
+	// ブロックの更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
+			}
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
 	CheckAllCollisions();
+
+	ChangePhase();
+
+}
+
+void GameScene::DeathPhaseUpdate() {
+
+	// スカイドームの更新
+	skydome_->Update();
+
+	// 敵の更新
+	// enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	deathParticle_->Update();
+	
+	if (isDebuCameraActive_) {
+
+		// デバッグカメラの更新
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+
+	} else {
+		
+		// ビュープロジェクションの更新と転送
+		viewProjection_.UpdateMatrix();
+	}
+
+	// ブロックの更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
+			}
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
+	if (deathParticle_ && deathParticle_->GetIsFinished()) {
+		isFinished_ = true;
+	}
+
+}
+
+void GameScene::ChangePhase() {
+
+	switch (phase_) {
+	case GameScene::Phase::kPlay:
+
+		
+		if (player_->GetIsDead()) {
+			// デス演出フェーズに切り替え
+			phase_ = Phase::kDeath;
+			//自キャラの座標を取得
+			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
+
+			deathParticle_ = new DeathParticle;
+			deathParticle_->Initialize(modelDeathParticle_, &viewProjection_, deathParticlesPosition);
+
+		}
+
+		break;
+	case GameScene::Phase::kDeath:
+		
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -259,8 +353,9 @@ void GameScene::Draw() {
 	// スカイドームの描画
 	skydome_->Draw();
 
-	player_->Draw();
-
+	if (!player_->GetIsDead()) {
+		player_->Draw();
+	}
 	if (deathParticle_) {
 		deathParticle_->Draw();
 	}

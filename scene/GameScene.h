@@ -16,6 +16,7 @@
 #include "MapChipField.h"
 #include "CameraController.h"
 #include "DeathParticle.h"
+#include "Fade.h"
 
 /// <summary>
 /// ゲームシーン
@@ -76,12 +77,16 @@ private: // メンバ変数
 	
 	//ゲームのフェーズ(型)
 	enum class Phase {
+		kFadeIn, // フェードイン
 		kPlay,	//ゲームプレイ
 		kDeath,	//デス演出
+		kFadoOut, // フェードアウト
 	};
 
 	//ゲームの現在フェーズ
 	Phase phase_;
+
+	Fade* fade_ = nullptr;
 
 	//3Dモデルデータ
 	Model* model_ = nullptr;

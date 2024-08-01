@@ -49,7 +49,11 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	//ゲームプレイフェーズから開始
-	phase_ = Phase::kPlay;
+	phase_ = Phase::kFadeIn;
+
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
@@ -118,6 +122,19 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	switch (phase_) {
+	case Phase::kFadeIn:
+
+		fade_->Update();
+		if (fade_->IsFinished()) {
+		
+			fade_->Stop();
+			phase_ = Phase::kPlay;
+
+		}
+
+		PlayPhaseUpdate();
+
+		break;
 	case Phase::kPlay:
 
 		PlayPhaseUpdate();
@@ -129,7 +146,17 @@ void GameScene::Update() {
 		DeathPhaseUpdate();
 
 		break;
-	
+	case Phase::kFadoOut:
+
+		fade_->Update();
+		if (fade_->IsFinished()) {
+
+			//fade_->Stop();
+			isFinished_ = true;
+		}
+
+		break;
+
 	default:
 		break;
 	}	
@@ -238,7 +265,9 @@ void GameScene::DeathPhaseUpdate() {
 	}
 
 	if (deathParticle_ && deathParticle_->GetIsFinished()) {
-		isFinished_ = true;
+		//isFinished_ = true;
+		phase_ = Phase::kFadoOut;
+		fade_->Start(Fade::Status::FadeOut, 1.0f);
 	}
 
 }
@@ -384,12 +413,16 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 前景スプライト描画
+
+	fade_->Draw();
+
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

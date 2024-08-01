@@ -8,6 +8,8 @@ TitleScene::~TitleScene() {
 
 	delete modelTitle_;
 
+	delete fade_;
+
 }
 
 void TitleScene::Initialize() {
@@ -25,13 +27,36 @@ void TitleScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_.z = -10.0f;
 
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
+
 }
 
 void TitleScene::Update() {
 
 	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-		isFinished_ = true;
+		fade_->Start(Fade::Status::FadeOut, 1.0f);
+		phase_ = Phase::kFadoOut;
 	}
+
+	switch (phase_) {
+	case TitleScene::Phase::kFadeIn:
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			fade_->Stop();
+			phase_ = Phase::kMain;
+		}
+		break;
+	case TitleScene::Phase::kFadoOut:
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			//fade_->Stop();
+			isFinished_ = true;
+		}
+		break;
+	}
+	
 
 	worldTransform_.rotation_.y += std::numbers::pi_v<float> / 30.0f;
 	worldTransform_.UpdateMatrix();
@@ -48,7 +73,7 @@ void TitleScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	#pragma region 3Dオブジェクト描画
+#pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
@@ -63,5 +88,7 @@ void TitleScene::Draw() {
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
+
+	fade_->Draw();
 
 }

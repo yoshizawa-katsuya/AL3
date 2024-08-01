@@ -3,6 +3,7 @@
 #include "DirectXCommon.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "Fade.h"
 
 class TitleScene {
 public:
@@ -23,6 +24,13 @@ public:
 
 private:
 
+	//シーンのフェーズ
+	enum class Phase {
+		kFadeIn,	//フェードイン
+		kMain,	//メイン部
+		kFadoOut,	//フェードアウト
+	};
+
 	DirectXCommon* dxCommon_ = nullptr;
 
 	Model* modelPlayer_ = nullptr;
@@ -36,5 +44,10 @@ private:
 
 	//終了フラグ
 	bool isFinished_ = false;
+
+	Fade* fade_ = nullptr;
+
+	//現在のフェーズ
+	Phase phase_ = Phase::kFadeIn;
 
 };

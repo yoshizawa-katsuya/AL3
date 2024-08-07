@@ -2,6 +2,12 @@
 #include "cassert"
 #include "Vector.h"
 
+//フェーズの関数テーブル
+void (Enemy::*Enemy::spFuncTable[])() = {
+    &Enemy::ApproachUpdate, // 接近
+    &Enemy::LeaveUpdate     // 離脱
+};
+
 void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
 	// NULLポインタチェック
@@ -12,9 +18,21 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = {0.0f, 5.0f, 10.0f};
+
+	//接近フェーズの更新関数を代入
+	//pFunk_ = &Enemy::ApproachUpdate;
+
 }
 
 void Enemy::Update() {
+
+
+	//メンバ関数ポインタに入っている関数を呼び出す
+	(this->*spFuncTable[static_cast<size_t>(phase_)])();
+
+	//(this->*pFunk_)();
+
+	/*
 	switch (phase_) {
 	case Phase::Approach:
 	default:
@@ -24,6 +42,7 @@ void Enemy::Update() {
 		LeaveUpdate();
 		break;
 	}
+	*/
 
 	worldTransform_.UpdateMatrix();
 

@@ -19,6 +19,12 @@ public:
 
 private:
 
+	//メンバ関数ポインタ
+	//void (Enemy::*pFunk_)();
+
+	//メンバ関数のポインタのテーブル
+	static void (Enemy::*spFuncTable[])();
+
 	// ワールド変換データ
 	WorldTransform worldTransform_;
 	// モデル

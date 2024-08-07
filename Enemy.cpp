@@ -1,12 +1,15 @@
 #include "Enemy.h"
 #include "cassert"
 #include "Vector.h"
+#include "EnemyStateAproach.h"
 
 //フェーズの関数テーブル
+/*
 void (Enemy::*Enemy::spFuncTable[])() = {
     &Enemy::ApproachUpdate, // 接近
     &Enemy::LeaveUpdate     // 離脱
 };
+*/
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
@@ -22,13 +25,17 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	//接近フェーズの更新関数を代入
 	//pFunk_ = &Enemy::ApproachUpdate;
 
+	//初期状態をセット
+	ChangeState(std::make_unique<EnemyStateAproach>(this));
+
 }
 
 void Enemy::Update() {
 
+	state_->Update();
 
 	//メンバ関数ポインタに入っている関数を呼び出す
-	(this->*spFuncTable[static_cast<size_t>(phase_)])();
+	//(this->*spFuncTable[static_cast<size_t>(phase_)])();
 
 	//(this->*pFunk_)();
 
@@ -48,6 +55,7 @@ void Enemy::Update() {
 
 }
 
+/*
 void Enemy::ApproachUpdate() {
 	// 移動
 	worldTransform_.translation_ = Add(worldTransform_.translation_, ApproachVelocity_);
@@ -62,11 +70,19 @@ void Enemy::LeaveUpdate() {
 	worldTransform_.translation_ = Add(worldTransform_.translation_, LeaveVelocity_);
 	
 }
+*/
 
 void Enemy::Draw(const ViewProjection& viewProjection) {
 
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
+
+}
+
+void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) {
+
+	//引数で受け取った状態を次の状態としてセットする
+	state_ = std::move(state);
 
 }

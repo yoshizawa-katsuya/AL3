@@ -3,6 +3,7 @@
 #include "TextureManager.h"
 #include "Vector.h"
 #include "Matrix.h"
+#include "Slerp.h"
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3 velocity) {
 
@@ -38,8 +39,24 @@ void EnemyBullet::Update() {
 		isDead_ = true;
 	}
 
+	//敵弾から自キャラへのベクトルを計算
+	Vector3 toPlayer = Subtract(player_->GetWorldPosition(), GetWorldPosition());
+
+	//ベクトルを正規化する
+	toPlayer = Normalize(toPlayer);
+	velocity_ = Normalize(velocity_);
+	//球面線形補間により、今の速度と自キャラのベクトルを内挿し、新たな速度とする
+	velocity_ = Slerp(velocity_, toPlayer, 0.1f) * kBulletSpeed_;
+
 	// 座標を移動させる
 	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
+
+	// Y軸回り角度(θy)
+	worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
+	Matrix4x4 minusThetaY = MakeRotateYMatrix(-worldTransform_.rotation_.y);
+	Vector3 velocityZ = Transform(velocity_, minusThetaY);
+	// X軸回り角度(θx)
+	worldTransform_.rotation_.x = std::atan2(-velocityZ.y, velocityZ.z);
 
 	worldTransform_.UpdateMatrix();
 
@@ -51,4 +68,16 @@ void EnemyBullet::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 
+}
+
+Vector3 EnemyBullet::GetWorldPosition() { 
+	
+	// ワールド座標を入れる変数
+	Vector3 worlsPos;
+	// ワールド行列の平行移動成分を取得
+	worlsPos.x = worldTransform_.matWorld_.m[3][0];
+	worlsPos.y = worldTransform_.matWorld_.m[3][1];
+	worlsPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worlsPos;
 }

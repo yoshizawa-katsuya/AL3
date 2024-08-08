@@ -98,6 +98,7 @@ void Enemy::Fire() {
 	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->SetPlayer(player_);
 
 	bullets_.push_back(newBullet);
 

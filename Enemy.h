@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "EnemyBullet.h"
+#include "TimedCall.h"
 
 //敵
 class Enemy {
@@ -23,6 +24,9 @@ public:
 
 	//弾発射
 	void Fire();
+
+	//弾を発射し、タイマーをリセットするコールバック関数
+	void FireCallBack();
 
 	// 描画
 	void Draw(const ViewProjection& viewProjection);
@@ -53,5 +57,8 @@ private:
 	// キャラクターの移動速さ
 	Vector3 ApproachVelocity_ = {0.0f, 0.0f, -0.1f};
 	Vector3 LeaveVelocity_ = {0.1f, -0.1f, 0.0f};
+
+	//時限発動のリスト
+	std::list<TimedCall*> timedCalls_;
 
 };

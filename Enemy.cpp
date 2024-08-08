@@ -6,6 +6,12 @@ Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
 		delete bullet;
 	}
+
+	//timedCalls_の開放
+	for (TimedCall* timedCall : timedCalls_) {
+		delete timedCall;
+	}
+
 }
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle) {
@@ -23,11 +29,24 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Enemy::ApproachInitialize() {
+
+	//発射タイマーをセットする
+	timedCalls_.push_back(new TimedCall(std::bind(&Enemy::FireCallBack, this), kFireInterval));
+
 	//発射タイマーを初期化
-	fireTimer = kFireInterval;
+	//fireTimer = kFireInterval;
 }
 
 void Enemy::Update() {
+
+	//終了したタイマーを削除
+	timedCalls_.remove_if([](TimedCall* timedCall) {
+		if (timedCall->IsFinished()) {
+			delete timedCall;
+			return true;
+		}
+		return false;
+	});
 
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](EnemyBullet* bullet) {
@@ -59,6 +78,12 @@ void Enemy::Update() {
 
 void Enemy::ApproachUpdate() {
 
+	//範囲for文でリストの全要素について回す
+	for (TimedCall* timedCall : timedCalls_) {
+		timedCall->Update();
+	}
+
+	/*
 	//発射タイマーカウントダウン
 	fireTimer--;
 	//指定時間に達した
@@ -68,12 +93,19 @@ void Enemy::ApproachUpdate() {
 		//発射タイマーを初期化
 		fireTimer = kFireInterval;
 	}
+	*/
 
 	// 移動
 	worldTransform_.translation_ = Add(worldTransform_.translation_, ApproachVelocity_);
 	// 規定の位置に到達したら離脱
 	if (worldTransform_.translation_.z < 0.0f) {
 		phase_ = Phase::Leave;
+
+		// timedCalls_の開放
+		for (TimedCall* timedCall : timedCalls_) {
+			delete timedCall;
+		}
+		timedCalls_.clear();
 	}
 }
 
@@ -91,6 +123,16 @@ void Enemy::Fire() {
 	newBullet->Initialize(model_, worldTransform_.translation_);
 
 	bullets_.push_back(newBullet);
+
+}
+
+void Enemy::FireCallBack() {
+
+	//弾を発射する
+	Fire();
+
+	//発射タイマーをセットする
+	timedCalls_.push_back(new TimedCall(std::bind(&Enemy::FireCallBack, this), kFireInterval));
 
 }
 

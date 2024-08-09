@@ -2,6 +2,7 @@
 #include "cassert"
 #include "TextureManager.h"
 #include "Vector.h"
+#include "CollisionConfig.h"
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3 velocity) {
 
@@ -17,6 +18,11 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.translation_ = position;
 
 	velocity_ = velocity;
+
+	// 衝突属性を設定
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(~kCollisionAttributeEnemy);
 
 }
 

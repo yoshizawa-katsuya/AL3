@@ -2,6 +2,7 @@
 #include "cassert"
 #include "Vector.h"
 #include "Player.h"
+#include "CollisionConfig.h"
 
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
@@ -19,6 +20,11 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = {10.0f, 0.0f, 30.0f};
+
+	// 衝突属性を設定
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(~kCollisionAttributeEnemy);
 
 	ApproachInitialize();
 }

@@ -1,8 +1,9 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Collider.h"
 
-class EnemyBullet {
+class EnemyBullet : public Collider{
 public:
 	//初期化
 	void Initialize(Model* model, const Vector3& position, const Vector3 velocity);
@@ -10,16 +11,16 @@ public:
 	void Update();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
 	void Draw(const ViewProjection& viewProjection);
 
 	bool IsDead() const { return isDead_; }
 
 	// ワールド座標を取得
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 
-	const float GetRadius() const { return radius_; }
+	//const float GetRadius() const { return radius_; }
 
 private:
 
@@ -42,6 +43,6 @@ private:
 	bool isDead_ = false;
 
 	//半径
-	const float radius_ = 1.0f; 
+	//const float radius_ = 1.0f; 
 
 };

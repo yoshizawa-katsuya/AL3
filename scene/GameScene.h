@@ -47,7 +47,12 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
-private: // メンバ変数
+private:
+	
+	///コライダー2つの衝突判定と応答
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+
+	// メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;

@@ -97,8 +97,6 @@ void GameScene::Update() {
 
 void GameScene::CheckAllColision() {
 
-	//判定対象AとBの座標
-	Vector3 posA, posB;
 
 	//自弾リストの取得
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
@@ -107,24 +105,11 @@ void GameScene::CheckAllColision() {
 
 	#pragma region
 
-	//自キャラと敵弾の当たり判定
-	
-	//自キャラの座標
-	posA = player_->GetWorldPosition();
-
 	//自キャラと敵弾すべての当たり判定
 	for (EnemyBullet* bullet : enemyBullets) {
 	
-		//敵弾の座標
-		posB = bullet->GetWorldPosition();
-		float distance = Length(Subtract(posA, posB));
-		//球と球の交差判定
-		if (distance <= player_->GetRadius() + bullet->GetRadius()) {
-			//自キャラ衝突時コールバックを呼び出す
-			player_->OnCollision();
-			//敵弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
-		}
+		//ペアの衝突判定
+		CheckCollisionPair(player_, bullet);
 
 	}
 
@@ -132,24 +117,10 @@ void GameScene::CheckAllColision() {
 
 	#pragma region
 
-	//自弾と敵キャラの当たり判定
-
-	// 敵キャラの座標
-	posA = enemy_->GetWorldPosition();
-
 	// 敵キャラと自弾すべての当たり判定
 	for (PlayerBullet* bullet : playerBullets) {
 
-		// 自弾の座標
-		posB = bullet->GetWorldPosition();
-		float distance = Length(Subtract(posA, posB));
-		// 球と球の交差判定
-		if (distance <= enemy_->GetRadius() + bullet->GetRadius()) {
-			// 敵キャラ衝突時コールバックを呼び出す
-			enemy_->OnCollision();
-			// 自弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
-		}
+		CheckCollisionPair(enemy_, bullet);
 	}
 
 	#pragma endregion
@@ -158,23 +129,11 @@ void GameScene::CheckAllColision() {
 
 	//自弾と敵弾の当たり判定
 	for (PlayerBullet* playerBullet : playerBullets) {
-		// 自弾の座標
-		posA = playerBullet->GetWorldPosition();
-
 		for (EnemyBullet* enemyBullet : enemyBullets) {
-			// 敵弾の座標
-			posB = enemyBullet->GetWorldPosition();
-			float distance = Length(Subtract(posA, posB));
-			// 球と球の交差判定
-			if (distance <= playerBullet->GetRadius() + enemyBullet->GetRadius()) {
-				// 敵弾の衝突時コールバックを呼び出す
-				enemyBullet->OnCollision();
-				// 自弾の衝突時コールバックを呼び出す
-				playerBullet->OnCollision();
-			}
+			
+			CheckCollisionPair(playerBullet, enemyBullet);
 
 		}
-
 	}
 
 	#pragma endregion
@@ -232,4 +191,21 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) 
+{
+
+	Vector3 worldPosA = colliderA->GetWorldPosition();
+	Vector3 worldPosB = colliderB->GetWorldPosition();
+
+	float distance = Length(Subtract(worldPosA, worldPosB));
+	// 球と球の交差判定
+	if (distance <= colliderA->GetRadius() + colliderB->GetRadius()) {
+		// 自キャラ衝突時コールバックを呼び出す
+		colliderA->OnCollision();
+		// 敵弾の衝突時コールバックを呼び出す
+		colliderB->OnCollision();
+	}
+
 }

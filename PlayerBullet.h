@@ -1,9 +1,10 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Collider.h"
 
 //自キャラの弾
-class PlayerBullet {
+class PlayerBullet : public Collider{
 
 public:
 	// 初期化
@@ -13,7 +14,7 @@ public:
 	void Update();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
 	// 描画
 	void Draw(const ViewProjection& viewProjection);
@@ -21,9 +22,9 @@ public:
 	bool IsDead() const { return isDead_; }
 
 	// ワールド座標を取得
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 
-	const float GetRadius() const { return radius_; }
+	//const float GetRadius() const { return radius_; }
 
 private:
 
@@ -46,6 +47,6 @@ private:
 	bool isDead_ = false;
 
 	// 半径
-	const float radius_ = 1.0f;
+	//const float radius_ = 1.0f;
 
 };

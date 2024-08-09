@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "DebugCamera.h"
 #include "Enemy.h"
+#include "CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -40,7 +41,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 衝突判定と応答
 	/// </summary>
-	void CheckAllColision();
+	//void CheckAllColision();
 
 	/// <summary>
 	/// 描画
@@ -50,7 +51,7 @@ public: // メンバ関数
 private:
 	
 	///コライダー2つの衝突判定と応答
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+	//void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
 	// メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -69,6 +70,8 @@ private:
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	CollisionManager* collisionManager_ = nullptr;
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;

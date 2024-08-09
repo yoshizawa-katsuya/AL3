@@ -10,6 +10,8 @@ GameScene::~GameScene() {
 
 	delete debugCamera_;
 
+	delete collisionManager_;
+
 	delete model_;
 
 	//自キャラの解放
@@ -37,6 +39,8 @@ void GameScene::Initialize() {
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
+	collisionManager_ = new CollisionManager();
+
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("./Resources/mario.jpg");
 	enemyTextureHandle_ = TextureManager::Load("./Resources/enemy.png");
@@ -57,6 +61,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+	collisionManager_->ClearColliders();
 
 	#ifdef _DEBUG
 		if (input_->TriggerKey(DIK_P)) {
@@ -91,10 +97,21 @@ void GameScene::Update() {
 		enemy_->Update();
 	}
 
-	CheckAllColision();
+	collisionManager_->SetCollider(player_);
+	collisionManager_->SetCollider(enemy_);
+	// 自弾全てについて
+	for (PlayerBullet* playerbullet : player_->GetBullets()) {
+		collisionManager_->SetCollider(playerbullet);
+	}
+	//敵弾すべてについて
+	for (EnemyBullet* enemyBullet : enemy_->GetBullets()) {
+		collisionManager_->SetCollider(enemyBullet);
+	}
+
+	collisionManager_->CheckAllColision();
 
 }
-
+/*
 void GameScene::CheckAllColision() {
 
 	//コライダー
@@ -128,7 +145,7 @@ void GameScene::CheckAllColision() {
 	}
 
 }
-
+*/
 void GameScene::Draw() {
 
 	// コマンドリストの取得
@@ -181,7 +198,7 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
-
+/*
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) 
 {
 
@@ -204,3 +221,4 @@ void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 	}
 
 }
+*/

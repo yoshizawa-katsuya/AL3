@@ -15,7 +15,7 @@ void RailCamera::Initialize(const Vector3 worldPos, const Vector3 rotate) {
 
 void RailCamera::Update() {
 
-	worldTransform_.translation_.z -= 0.1f;
+	//worldTransform_.translation_.z -= 0.1f;
 	//worldTransform_.rotation_.y += 0.1f;
 	worldTransform_.UpdateMatrix();
 
@@ -25,7 +25,7 @@ void RailCamera::Update() {
 	//カメラの座標を画面表示する処理
 	ImGui::Begin("Camera");
 	ImGui::SliderFloat3("translate", &worldTransform_.translation_.x, -20.0f, 20.0f);
-	ImGui::SliderFloat3("rotation", &worldTransform_.rotation_.x, -20.0f, 20.0f);
+	ImGui::SliderFloat3("rotation", &worldTransform_.rotation_.x, -4.0f, 4.0f);
 	ImGui::End();
 
 

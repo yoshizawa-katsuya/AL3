@@ -3,8 +3,6 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "Vector.h"
-#include "Curve.h"
-#include "PrimitiveDrawer.h"
 
 GameScene::GameScene() {}
 
@@ -73,16 +71,7 @@ void GameScene::Initialize() {
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
 
-	controlPoints_ = {
-	    {0, 0, 0},
-		{10, 10, 0},
-		{10, 15, 0},
-		{20, 15, 0},
-		{20, 0, 0},
-		{30, 0, 0},
-    };
-
-	pointsDrawing_ = GenerateCatmullRomSplinePoints(controlPoints_, segmentCount_);
+	
 
 
 }
@@ -99,6 +88,9 @@ void GameScene::Update() {
 		}
 	#endif // DEBUG
 
+	// レールカメラの更新
+	railCamera_->Update();
+
 	if (isDebugCameraActive_) {
 
 		// デバッグカメラの更新
@@ -109,8 +101,7 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	} else {
 
-		//レールカメラの更新
-		railCamera_->Update();
+		
 		viewProjection_.matView = railCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
 		//ビュープロジェクション行列の更新と転送
@@ -256,13 +247,8 @@ void GameScene::Draw() {
 		enemy_->Draw(viewProjection_);
 	}
 
-	Vector4 red = {1.0f, 0.0f, 0.0f, 1.0f};
+	railCamera_->Draw(viewProjection_);
 
-	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
-
-	for (size_t i = 0; i < pointsDrawing_.size() - 1; i++) {
-			PrimitiveDrawer::GetInstance()->DrawLine3d(pointsDrawing_[i], pointsDrawing_[i + 1], red);
-	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

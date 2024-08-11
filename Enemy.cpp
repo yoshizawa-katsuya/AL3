@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "cassert"
 #include "Vector.h"
+#include "Matrix.h"
 #include "Player.h"
 #include "GameScene.h"
 
@@ -139,4 +140,19 @@ Vector3 Enemy::GetWorldPosition() {
 
 	return worlsPos;
 
+}
+
+Vector3 Enemy::GetScreenPosition(const ViewProjection& viewProjection) {
+	
+	
+	// ビューポート行列
+	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+	Matrix4x4 matViewProjectionViewport = Multiply(Multiply(viewProjection.matView, viewProjection.matProjection), matViewport);
+
+	// ワールド→スクリーン座標変換(ここで3Dから2Dになる)
+	Vector3 screenPosition = Transform(GetWorldPosition(), matViewProjectionViewport);
+
+	return screenPosition;
 }

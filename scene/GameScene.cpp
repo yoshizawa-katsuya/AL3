@@ -237,6 +237,26 @@ void GameScene::CheckAllColision() {
 
 	#pragma endregion
 
+	#pragma region
+
+	Vector2 ScreenPosA = player_->Get2DReticlePosition();
+	Vector2 SizeA = player_->Get2DReticleSize();
+
+	player_->SetIsLockOn(false);
+
+	for (Enemy* enemy : enemys_) {
+		Vector2 ScreenPosB = {enemy->GetScreenPosition(viewProjection_).x, enemy->GetScreenPosition(viewProjection_).y};
+
+		if (ScreenPosB.x >= ScreenPosA.x - SizeA.x && ScreenPosB.x <= ScreenPosA.x + SizeA.x &&
+			ScreenPosB.y >= ScreenPosA.y - SizeA.y && ScreenPosB.y <= ScreenPosA.y + SizeA.y) {
+
+			player_->LockOn(ScreenPosB, enemy->GetWorldPosition());
+			break;
+		}
+
+	}
+
+	#pragma endregion
 }
 
 void GameScene::EnemyPop(const Vector3& position) {

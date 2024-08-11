@@ -37,6 +37,9 @@ public:
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
 
+	//スクリーン座標を取得
+	Vector3 GetScreenPosition(const ViewProjection& viewProjection);
+
 	// 弾リストを取得
 	//const std::list<EnemyBullet*>& GetBullets() const { return enemyBullets_; }
 

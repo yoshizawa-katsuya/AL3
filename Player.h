@@ -35,11 +35,20 @@ public:
 	//UI描画
 	void DrawUI();
 
+	void LockOn(const Vector2& position, const Vector3& targetPosition);
+
 	//親となるワールドトランスフォームをセット
 	void SetParent(const WorldTransform* parent);
 
+	void SetIsLockOn(bool isLockOn) { isLockOn_ = isLockOn; } 
+
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	//2Dレティクルの座標を取得
+	Vector2 Get2DReticlePosition() { return sprite2DReticle_->GetPosition(); }
+
+	Vector2 Get2DReticleSize() { return sprite2DReticle_->GetSize(); }
 
 	//弾リストを取得
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
@@ -69,5 +78,9 @@ private:
 
 	// 半径
 	const float radius_ = 1.0f; 
+
+	bool isLockOn_ = false;
+
+	Vector3 target_;
 
 };

@@ -6,6 +6,7 @@
 #include "Vector.h"
 #include "Matrix.h"
 #include "ImGuiManager.h"
+#include "Lerp.h"
 
 Player::~Player() {
 
@@ -37,7 +38,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& pos
 	uint32_t textureReticle = TextureManager::Load("./Resources/reticle.png");
 
 	//スプライト生成
-	sprite2DReticle_ = Sprite::Create(textureReticle, {400.0f, 400.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	sprite2DReticle_ = Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 
 }
 
@@ -120,8 +121,9 @@ void Player::Update(const ViewProjection& viewProjection) {
 		positionReticle = Transform(positionReticle, matViewProjectionViewport);
 
 		//スプライトのレティクルに座標設定
+		positionReticle = Lerp({sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0.0f}, positionReticle, 0.2f);
 		sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
-
+		sprite2DReticle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	}
 
 	//キャラクター攻撃処理
@@ -164,9 +166,14 @@ void Player::Attack() {
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		//自機から照準オブジェクトへのベクトル
-		velocity = Subtract(worldTransform3DReticle_.translation_, GetWorldPosition());
-		velocity = Multiply(kBulletSpeed, Normalize(velocity));
+		if (isLockOn_) {
+			velocity = Subtract(target_, GetWorldPosition());
 
+		} else {
+			velocity = Subtract(worldTransform3DReticle_.translation_, GetWorldPosition());
+			
+		}
+		velocity = Multiply(kBulletSpeed, Normalize(velocity));
 		//速度ベクトルを自機の向きに合わせて回転させる
 		//velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
@@ -206,6 +213,15 @@ void Player::DrawUI() {
 
 	sprite2DReticle_->Draw();
 
+}
+
+void Player::LockOn(const Vector2& position, const Vector3& targetPosition) {
+
+	isLockOn_ = true;
+	sprite2DReticle_->SetPosition(position);
+	sprite2DReticle_->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
+
+	target_ = targetPosition;
 }
 
 void Player::SetParent(const WorldTransform* parent) {

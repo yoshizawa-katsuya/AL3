@@ -242,7 +242,7 @@ void GameScene::CheckAllColision() {
 	Vector2 ScreenPosA = player_->Get2DReticlePosition();
 	Vector2 SizeA = player_->Get2DReticleSize();
 
-	player_->SetIsLockOn(false);
+	//player_->SetIsLockOn(false);
 
 	for (Enemy* enemy : enemys_) {
 		Vector2 ScreenPosB = {enemy->GetScreenPosition(viewProjection_).x, enemy->GetScreenPosition(viewProjection_).y};
@@ -250,8 +250,7 @@ void GameScene::CheckAllColision() {
 		if (ScreenPosB.x >= ScreenPosA.x - SizeA.x && ScreenPosB.x <= ScreenPosA.x + SizeA.x &&
 			ScreenPosB.y >= ScreenPosA.y - SizeA.y && ScreenPosB.y <= ScreenPosA.y + SizeA.y) {
 
-			player_->LockOn(ScreenPosB, enemy->GetWorldPosition());
-			break;
+			player_->LockOn(enemy, viewProjection_);
 		}
 
 	}
@@ -423,7 +422,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	
-	player_->DrawUI();
+	player_->DrawUI(viewProjection_);
 
 
 	// スプライト描画後処理

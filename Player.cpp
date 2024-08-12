@@ -7,6 +7,7 @@
 #include "Matrix.h"
 #include "ImGuiManager.h"
 #include "Lerp.h"
+#include "Enemy.h"
 
 Player::~Player() {
 
@@ -15,6 +16,9 @@ Player::~Player() {
 	}
 
 	delete sprite2DReticle_;
+	for (Sprite* lockOnReticle : lockOnReticles_) {
+		delete lockOnReticle;
+	}
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position) {
@@ -44,6 +48,13 @@ void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& pos
 
 void Player::Update(const ViewProjection& viewProjection) {
 
+	// デスフラグの立った敵を削除
+	targets_.remove_if([](Enemy* target) {
+		if (target->IsDead()) {
+			return true;
+		}
+		return false;
+	});
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -52,6 +63,14 @@ void Player::Update(const ViewProjection& viewProjection) {
 		}
 		return false;
 	});
+
+	if (targets_.empty()) {
+		isLockOn_ = false;
+		for (Sprite* lockOnReticle : lockOnReticles_) {
+			delete lockOnReticle;
+		}
+		lockOnReticles_.clear();
+	}
 
 	Rotate();
 
@@ -121,7 +140,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		positionReticle = Transform(positionReticle, matViewProjectionViewport);
 
 		//スプライトのレティクルに座標設定
-		positionReticle = Lerp({sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0.0f}, positionReticle, 0.2f);
+		//positionReticle = Lerp({sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0.0f}, positionReticle, 0.2f);
 		sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 		sprite2DReticle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	}
@@ -167,22 +186,34 @@ void Player::Attack() {
 
 		//自機から照準オブジェクトへのベクトル
 		if (isLockOn_) {
-			velocity = Subtract(target_, GetWorldPosition());
+
+			for (Enemy* target : targets_) {
+
+				velocity = Subtract(target->GetWorldPosition(), GetWorldPosition());
+				velocity = Multiply(kBulletSpeed, Normalize(velocity));
+				// 速度ベクトルを自機の向きに合わせて回転させる
+				// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+				// 弾を生成し、初期化
+				PlayerBullet* newBullet = new PlayerBullet();
+				newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+				bullets_.push_back(newBullet);
+			}
 
 		} else {
+
 			velocity = Subtract(worldTransform3DReticle_.translation_, GetWorldPosition());
-			
+			velocity = Multiply(kBulletSpeed, Normalize(velocity));
+			// 速度ベクトルを自機の向きに合わせて回転させる
+			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+			// 弾を生成し、初期化
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+			bullets_.push_back(newBullet);
 		}
-		velocity = Multiply(kBulletSpeed, Normalize(velocity));
-		//速度ベクトルを自機の向きに合わせて回転させる
-		//velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
-		//弾を生成し、初期化
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, GetWorldPosition(), velocity);
-
-		bullets_.push_back(newBullet);
-
 
 	}
 
@@ -209,19 +240,41 @@ void Player::Draw(const ViewProjection& viewProjection) {
 
 }
 
-void Player::DrawUI() {
+void Player::DrawUI(const ViewProjection& viewProjection) {
 
+	sprite2DReticle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	sprite2DReticle_->Draw();
+
+
+	std::list<Sprite*>::iterator lockOnReticlesIterator = lockOnReticles_.begin();
+	for (Enemy* target : targets_) {
+		
+		Sprite* lockOnReticle = *lockOnReticlesIterator;
+		lockOnReticle->SetPosition({target->GetScreenPosition(viewProjection).x, target->GetScreenPosition(viewProjection).y});
+		lockOnReticle->Draw();
+
+		lockOnReticlesIterator++;
+		if (lockOnReticlesIterator == lockOnReticles_.end()) {
+			break;
+		}
+	}
 
 }
 
-void Player::LockOn(const Vector2& position, const Vector3& targetPosition) {
+void Player::LockOn(Enemy* target, const ViewProjection& viewProjection) {
 
 	isLockOn_ = true;
-	sprite2DReticle_->SetPosition(position);
-	sprite2DReticle_->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
+	for (Enemy* target_ : targets_) {
+		if (target_ == target) {
+			return;
+		}
+	}
+	targets_.push_back(target);
+	Sprite* lockOnReticle = Sprite::Create(sprite2DReticle_->GetTextureHandle(), {target->GetScreenPosition(viewProjection).x, target->GetScreenPosition(viewProjection).y}
+											, {1.0f, 0.0f, 0.0f, 1.0f}, {0.5f, 0.5f});
+	
+	lockOnReticles_.push_back(lockOnReticle);
 
-	target_ = targetPosition;
 }
 
 void Player::SetParent(const WorldTransform* parent) {

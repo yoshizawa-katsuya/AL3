@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "PlayerBullet.h"
 #include <list>
+class Enemy;
 
 //自キャラ
 class Player {
@@ -33,14 +34,14 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 
 	//UI描画
-	void DrawUI();
+	void DrawUI(const ViewProjection& viewProjection);
 
-	void LockOn(const Vector2& position, const Vector3& targetPosition);
+	void LockOn(Enemy* target, const ViewProjection& viewProjection);
 
 	//親となるワールドトランスフォームをセット
 	void SetParent(const WorldTransform* parent);
 
-	void SetIsLockOn(bool isLockOn) { isLockOn_ = isLockOn; } 
+	//void SetIsLockOn(bool isLockOn) { isLockOn_ = isLockOn; } 
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
@@ -76,11 +77,13 @@ private:
 	//2Dレティクル用スプライト
 	Sprite* sprite2DReticle_ = nullptr;
 
+	std::list<Sprite*> lockOnReticles_;
+
 	// 半径
 	const float radius_ = 1.0f; 
 
 	bool isLockOn_ = false;
 
-	Vector3 target_;
+	std::list<Enemy*> targets_;
 
 };

@@ -2,9 +2,9 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "WorldTransform.h"
-#include "Input.h"
 #include "PlayerBullet.h"
 #include <list>
+#include "Input.h"
 
 //自キャラ
 class Player {

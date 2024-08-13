@@ -68,6 +68,8 @@ public:
 
 	void SetCameraViewProjection(const ViewProjection* cameraViewProjection) { cameraViewProjection_ = cameraViewProjection; }
 
+	
+
 private:
 
 	//振るまい
@@ -122,10 +124,32 @@ private:
 	//腕振りギミック用の媒介変数
 	float rollArmParameter_ = 0.0f;
 
+
+	//攻撃用定数
+	struct ConstAttack {
+		//振りかぶりの時間<frame>
+		uint32_t anticipationTime;
+		//ための時間<frame>
+		uint32_t chargeTime;
+		//攻撃振りの時間<frame>
+		uint32_t swingTime;
+		//硬直時間<frame>
+		uint32_t recoveryTime;
+		//振りかぶりの移動速さ
+		float anticipationSpeed;
+		//ための移動速さ
+		float chargeSpeed;
+		//攻撃振りの移動速さ
+		float swingSpeed;
+	};
+
 	//攻撃用ワーク
 	struct WorkAttack {
 		// 攻撃用の媒介変数
 		uint16_t attackParameter_ = 0;
+		int32_t comboIndex = 0;	//コンボ何段目か
+		int32_t inComboPhase = 0;	//1段の中でどのフェーズなのか
+		bool comboNext = false;		//コンボが次段に進むフラグ
 	};
 
 	WorkAttack workAttack_;
@@ -141,4 +165,12 @@ private:
 
 	WorkDash workDash_;
 	
+public:
+
+	// コンボの数
+	static const int ComboNum = 3;
+
+	// コンボ定数表
+	static const std::array<ConstAttack, ComboNum> kConstAttacks_;
+
 };

@@ -8,6 +8,16 @@
 #include <cmath>
 #include "GlobalVariables.h"
 
+//コンボ定数表
+const std::array<Player::ConstAttack, Player::ComboNum> Player::kConstAttacks_ = {
+    {
+     //振りかぶり、攻撃前硬直、攻撃振り時間、硬直<frame> 各フェーズの移動速さ<m/sec>
+        {0, 0, 20, 20, 0.0f, 0.0f, 0.15f},
+     {15, 25, 40, 30, 0.2f, 0.0f, 0.0f},
+     {15, 25, 40, 70, 0.2f, 0.0f, 0.0f},
+     }
+};
+
 void Player::Initialize(const std::vector<Model*>& models, ViewProjection* viewProjection) {
 	
 	
@@ -71,6 +81,8 @@ void Player::ApplyGlobalVariables() {
 
 void Player::BehaviorRootInitialize() {
 
+	worldTransformBody_.rotation_.y = 0.0f;
+
 	InitializeFloatingGimmick();
 
 	InitializeRollArmGimmick();
@@ -79,7 +91,11 @@ void Player::BehaviorRootInitialize() {
 
 void Player::BehaviorAttackInitialize() {
 
+	workAttack_.comboIndex = 0;
 	workAttack_.attackParameter_ = 0;
+	
+	worldTransformBody_.rotation_.y = 0.8f;
+
 	worldTransformL_arm_.rotation_.x = -1.6f;
 	worldTransformR_arm_.rotation_.x = -1.6f;
 	worldTransformHammer_.rotation_.x = 1.6f;	
@@ -208,17 +224,17 @@ void Player::BehaviorRootUpdate() {
 		}
 
 		//攻撃入力
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
 			behaviorRequest_.emplace(Behavior::kAttack);
 		}
 
 		//ダッシュボタンを押したら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
 			behaviorRequest_.emplace(Behavior::kDash);
 		}
 
 		//ジャンプボタンを押したら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 			behaviorRequest_.emplace(Behavior::kJump);
 		}
 	}
@@ -231,37 +247,115 @@ void Player::BehaviorRootUpdate() {
 
 void Player::BehaviorAttackUpdate() {
 
-	// 攻撃の全体フレーム
-	const uint16_t kAttackTime = 60;
-	// 予備動作
-	const uint16_t kExtraOperationEndTime = 25;
-	// 振り下ろし
-	const uint16_t kSwingStartTime = 35;
-	const uint16_t kSwingEndTime = 45;
+	// ゲームパッドの状態を得る変数
+	XINPUT_STATE joyState;
+	XINPUT_STATE joyStatePre;
 
-	if (workAttack_.attackParameter_ < kExtraOperationEndTime) {
-		
-		const float extoraOperationSpeed = 0.12f;
-
-		worldTransformL_arm_.rotation_.x -= extoraOperationSpeed;
-		worldTransformR_arm_.rotation_.x -= extoraOperationSpeed;
-		worldTransformHammer_.rotation_.x -= extoraOperationSpeed;
-	
-	} else if (workAttack_.attackParameter_ >= kSwingStartTime && workAttack_.attackParameter_ < kSwingEndTime) {
-
-		const float swingSpeed = 0.3f;
-
-		worldTransformL_arm_.rotation_.x += swingSpeed;
-		worldTransformR_arm_.rotation_.x += swingSpeed;
-		worldTransformHammer_.rotation_.x += swingSpeed;
+	//コンボ上限に達していない
+	if (workAttack_.comboIndex < ComboNum - 1) {
+		if (Input::GetInstance()->GetJoystickState(0, joyState) && Input::GetInstance()->GetJoystickStatePrevious(0, joyStatePre)) {
+			//攻撃ボタンをトリガーしたら
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B && !(joyStatePre.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+				//コンボ有効
+				workAttack_.comboNext = true;
+			}
+		}
 	}
+
+	// 攻撃の全体フレーム
+	const uint32_t kAttackTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
+	// 予備動作
+	const uint32_t kExtraOperationEndTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
+	// 振り下ろし
+	const uint32_t kSwingStartTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
+	const uint32_t kSwingEndTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
+
+	//コンボ段階によってモーションを分岐
+	switch (workAttack_.comboIndex) {
+	case 0:
+
+		if (workAttack_.attackParameter_ < kExtraOperationEndTime) {
+
+			const float extoraOperationSpeed = 0.12f;
+
+			worldTransformL_arm_.rotation_.y -= extoraOperationSpeed;
+			worldTransformR_arm_.rotation_.y -= extoraOperationSpeed;
+			worldTransformHammer_.rotation_.y -= extoraOperationSpeed;
+
+		} else if (workAttack_.attackParameter_ >= kSwingStartTime && workAttack_.attackParameter_ < kSwingEndTime) {
+
+			const float swingSpeed = 0.1f;
+
+			worldTransformBody_.rotation_.y -= swingSpeed;
+		}
+
+		break;
+
+	case 1:
+		
+		if (workAttack_.attackParameter_ < kExtraOperationEndTime) {
+
+			const float extoraOperationSpeed = 0.12f;
+
+			worldTransformL_arm_.rotation_.x -= extoraOperationSpeed;
+			worldTransformR_arm_.rotation_.x -= extoraOperationSpeed;
+			worldTransformHammer_.rotation_.x -= extoraOperationSpeed;
+
+		} else if (workAttack_.attackParameter_ >= kSwingStartTime && workAttack_.attackParameter_ < kSwingEndTime) {
+
+			const float swingSpeed = 0.3f;
+
+			worldTransformL_arm_.rotation_.x += swingSpeed;
+			worldTransformR_arm_.rotation_.x += swingSpeed;
+			worldTransformHammer_.rotation_.x += swingSpeed;
+		}
+
+		break;
+
+	case 2:
+	default:
+
+		if (workAttack_.attackParameter_ < kExtraOperationEndTime) {
+
+			const float extoraOperationSpeed = 0.1f;
+
+			worldTransformBody_.rotation_.y += extoraOperationSpeed;
+
+		} else if (workAttack_.attackParameter_ >= kSwingStartTime && workAttack_.attackParameter_ < kSwingEndTime) {
+
+			const float swingSpeed = 0.6f;
+
+			worldTransformBody_.rotation_.y -= swingSpeed;
+		}
+
+		break;
+	}
+
+	
 
 	workAttack_.attackParameter_++;
 
 	if (workAttack_.attackParameter_ >= kAttackTime) {
-	
-		
-		behaviorRequest_.emplace(Behavior::kRoot);
+		//コンボ継続なら次のコンボに進む
+		if (workAttack_.comboNext) {
+			//コンボ継続フラグをリセット
+			workAttack_.comboNext = false;
+
+			workAttack_.attackParameter_ = 0;
+			workAttack_.inComboPhase = 0;
+			workAttack_.comboIndex++;
+
+			worldTransformBody_.rotation_.y = 0.0f;
+
+			worldTransformL_arm_.rotation_.x = -1.6f;
+			worldTransformR_arm_.rotation_.x = -1.6f;
+			worldTransformHammer_.rotation_.x = 1.6f;
+
+		} else {
+
+			behaviorRequest_.emplace(Behavior::kRoot);
+
+		}
 	}
 }
 

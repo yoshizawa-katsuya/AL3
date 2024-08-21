@@ -12,6 +12,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 
 	delete model_;
+	delete modelPlayer_;
 	delete modelSkydome_;
 
 	//自キャラの解放
@@ -59,6 +60,7 @@ void GameScene::Initialize() {
 
 	//3Dモデルの生成
 	model_ = Model::Create();
+	modelPlayer_ = Model::CreateFromOBJ("Player03", true);
 	modelSkydome_ = Model::CreateFromOBJ("skydome02", true);
 
 	// レールカメラの生成
@@ -73,7 +75,7 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	//自キャラの初期化
 	Vector3 playerPosition(0, 0, 20.0f);
-	player_->Initialize(model_, textureHandle_, playerPosition);
+	player_->Initialize(modelPlayer_, playerPosition);
 	//自キャラとレールカメラの親子関係を結ぶ
 	player_->SetParent(&railCamera_->GetWorldTransform());
 

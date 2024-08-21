@@ -16,7 +16,7 @@ Player::~Player() {
 	delete sprite2DReticle_;
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position) {
+void Player::Initialize(Model* model, const Vector3& position) {
 
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
@@ -25,8 +25,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& pos
 	assert(model);
 
 	model_ = model;
-	textureHandle_ = textureHandle;
-
+	
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 
@@ -293,7 +292,7 @@ void Player::OnCollision() {
 void Player::Draw(const ViewProjection& viewProjection) {
 
 	//3Dモデルを描画
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	model_->Draw(worldTransform_, viewProjection);
 
 	//弾描画
 	for (PlayerBullet* bullet : bullets_) {
@@ -301,7 +300,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	}
 
 	//3Dレティクルを描画
-	model_->Draw(worldTransform3DReticle_, viewProjection);
+	//model_->Draw(worldTransform3DReticle_, viewProjection);
 
 }
 

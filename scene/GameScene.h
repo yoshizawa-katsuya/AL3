@@ -95,6 +95,7 @@ private: // メンバ変数
 
 	//3Dモデル
 	Model* model_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 
 	//待機

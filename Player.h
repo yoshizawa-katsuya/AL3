@@ -15,7 +15,7 @@ public:
 	~Player();
 
 	//初期化
-	void Initialize(Model* model, uint32_t textureHandle, const Vector3& position);
+	void Initialize(Model* model, const Vector3& position);
 
 	//更新
 	void Update(const ViewProjection& viewProjection);
@@ -62,7 +62,7 @@ private:
 	//モデル
 	Model* model_ = nullptr;
 	//テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
+	//uint32_t textureHandle_ = 0u;
 
 	//3Dレティクル用ワールドトランスフォーム
 	WorldTransform worldTransform3DReticle_;

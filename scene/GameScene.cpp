@@ -36,6 +36,13 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//ゲームプレイフェーズから開始
+	phase_ = Phase::kFadeIn;
+
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
+
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
@@ -97,33 +104,63 @@ void GameScene::Update() {
 		}
 	#endif // DEBUG
 
+	
+
+	switch (phase_) {
+	case Phase::kFadeIn:
+
+		fade_->Update();
+		if (fade_->IsFinished()) {
+
+			fade_->Stop();
+			phase_ = Phase::kPlay;
+		}
+		PlayPhaseUpdate();
+
+		break;
+	case Phase::kPlay:
+
+		PlayPhaseUpdate();
+
+		break;
+	
+	default:
+		break;
+	}	
+
+	
+
+}
+
+void GameScene::PlayPhaseUpdate() {
+
 	if (isDebugCameraActive_) {
 
 		// デバッグカメラの更新
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		//ビュープロジェクション行列の転送
+		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
 
-		//レールカメラの更新
+		// レールカメラの更新
 		railCamera_->Update();
 		viewProjection_.matView = railCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
-		//ビュープロジェクション行列の更新と転送
+		// ビュープロジェクション行列の更新と転送
 		viewProjection_.TransferMatrix();
 	}
 
-	//スカイドームの更新
+	// スカイドームの更新
 	skydome_->Update();
 
-	//自キャラの更新
+	// 自キャラの更新
 	player_->Update(viewProjection_);
 
 	UpdateEnemyPopCommands();
-	
-	//デスフラグの立った敵を削除
+
+	// デスフラグの立った敵を削除
 	enemys_.remove_if([](Enemy* enemy) {
 		if (enemy->IsDead()) {
 			delete enemy;
@@ -398,6 +435,9 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 前景スプライト描画
+
+	fade_->Draw();
+
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 

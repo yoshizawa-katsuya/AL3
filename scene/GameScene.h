@@ -12,6 +12,7 @@
 #include "Enemy.h"
 #include "Skydome.h"
 #include "RailCamera.h"
+#include "Fade.h"
 #include <memory>
 #include <sstream>
 
@@ -40,6 +41,8 @@ public: // メンバ関数
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+
+	void PlayPhaseUpdate();
 
 	/// <summary>
 	/// 衝突判定と応答
@@ -71,6 +74,10 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	// デスフラグのgetter
+	bool GetIsFinished() const { return isFinished_; }
+
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -80,6 +87,18 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	
+	// ゲームのフェーズ(型)
+	enum class Phase {
+		kFadeIn,  // フェードイン
+		kPlay,    // ゲームプレイ
+		kFadoOut, // フェードアウト
+	};
+
+	// ゲームの現在フェーズ
+	Phase phase_;
+
+	Fade* fade_ = nullptr;
+
 	//デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
 
@@ -120,5 +139,8 @@ private: // メンバ変数
 
 	//レールカメラ
 	std::unique_ptr<RailCamera> railCamera_;
+
+	// 終了フラグ
+	bool isFinished_ = false;
 
 };

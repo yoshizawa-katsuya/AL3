@@ -9,6 +9,8 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 
+	delete fade_;
+
 	delete debugCamera_;
 
 	delete model_;

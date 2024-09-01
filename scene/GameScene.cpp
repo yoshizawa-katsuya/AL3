@@ -47,12 +47,12 @@ void GameScene::Initialize() {
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
-
+	/*
 	//軸方向表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
-
+	*/
 	//待機
 	isWait_ = false;
 	waitTimer_ = 0;
@@ -126,6 +126,17 @@ void GameScene::Update() {
 
 		break;
 	
+	case Phase::kFadoOut:
+
+		fade_->Update();
+		if (fade_->IsFinished()) {
+
+			//fade_->Stop();
+			isFinished_ = true;
+		}
+		PlayPhaseUpdate();
+
+		break;
 	default:
 		break;
 	}	
@@ -135,6 +146,13 @@ void GameScene::Update() {
 }
 
 void GameScene::PlayPhaseUpdate() {
+
+	playTime_++;
+
+	if (playTime_ == 840) {
+		phase_ = Phase::kFadoOut;
+		fade_->Start(Fade::Status::FadeOut, 1.0f);
+	}
 
 	if (isDebugCameraActive_) {
 

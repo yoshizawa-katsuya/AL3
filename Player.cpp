@@ -144,18 +144,18 @@ void Player::Update(const ViewProjection& viewProjection) {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
 	}
-
+	/*
 	// キャラクターの座標を画面表示する処理
 	ImGui::Begin("player");
 	ImGui::DragFloat3("player.translate", &worldTransform_.translation_.x, 0.01f);
 	ImGui::End();
-
+	*/
 }
 
 void Player::Rotate() {
 
 	
-
+	/*
 	//回転速さ
 	const float kRotSpeed = 0.02f;
 
@@ -165,7 +165,7 @@ void Player::Rotate() {
 	} else if (input_->PushKey(DIK_D)) {
 		worldTransform_.rotation_.y += kRotSpeed;
 	}
-	
+	*/
 }
 
 void Player::Attack() {
@@ -274,7 +274,7 @@ void Player::Reticle(const ViewProjection& viewProjection) {
 	const float kDistanceTestObject = 50.0f;
 	worldTransform3DReticle_.translation_ = Add(posNear, Multiply(kDistanceTestObject, mouseDirection));
 	worldTransform3DReticle_.UpdateMatrix();
-
+	/*
 	ImGui::Begin("player");
 	ImGui::Text("2DReticle:(%f,%f)", spritePosition.x, spritePosition.y);
 	ImGui::Text("Near:(%+.2f,%+.2f,%+.2f)", posNear.x, posNear.y, posNear.z);
@@ -282,7 +282,7 @@ void Player::Reticle(const ViewProjection& viewProjection) {
 	ImGui::Text("3DReticle:(%+.2f,%+.2f,%+.2f)", worldTransform3DReticle_.translation_.x,
 		worldTransform3DReticle_.translation_.y,worldTransform3DReticle_.translation_.z);
 	ImGui::End();
-
+	*/
 }
 
 void Player::OnCollision() {

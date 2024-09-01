@@ -35,11 +35,16 @@ void TitleScene::Initialize() {
 
 void TitleScene::Update() {
 
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-		fade_->Start(Fade::Status::FadeOut, 1.0f);
-		phase_ = Phase::kFadoOut;
+	XINPUT_STATE joyState;
+
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_START){
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kFadoOut;
+		}
 	}
 
+	
 	switch (phase_) {
 	case TitleScene::Phase::kFadeIn:
 		fade_->Update();

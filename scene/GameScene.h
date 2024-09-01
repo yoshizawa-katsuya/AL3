@@ -94,6 +94,8 @@ private: // メンバ変数
 		kFadoOut, // フェードアウト
 	};
 
+	uint32_t playTime_ = 0;
+
 	// ゲームの現在フェーズ
 	Phase phase_;
 

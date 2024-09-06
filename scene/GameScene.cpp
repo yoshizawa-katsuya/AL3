@@ -40,6 +40,7 @@ GameScene::~GameScene() {
 
 	delete cameraController_;
 
+	delete fade_;
 }
 
 void GameScene::Initialize() {

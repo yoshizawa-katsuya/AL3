@@ -154,9 +154,15 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	// キャラクターの座標を画面表示する処理
+#ifdef _DEBUG
+
 	ImGui::Begin("player");
 	ImGui::DragFloat3("player.translate", &worldTransform_.translation_.x, 0.01f);
 	ImGui::End();
+
+#endif // _DEBUG
+
+	
 
 }
 
